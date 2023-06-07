@@ -28,7 +28,7 @@ public class Record_Main : MonoBehaviour
     {
         return timerTime_Max_;
     }
-    [SerializeField] internal Record_Controller records_Controller_;
+    [SerializeField] public Record_Controller records_Controller_;
 
     public static Record_Main instance_;
 

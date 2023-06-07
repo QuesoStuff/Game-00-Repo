@@ -5,19 +5,19 @@ using UnityEngine;
 
 public class Move : MonoBehaviour
 {
-    [SerializeField] internal Rigidbody2D rb2d;
+    [SerializeField] public Rigidbody2D rb2d;
 
     // Speed variables
-    private const float normalSpeed_ = 5f;
-    private const float maxSpeed_ = 10f;
-    private const float lowestSpeed_ = 2.5f;
-    private const float diagnolSpeed_ = 2.5f;
-    private const float diagnolSlowSpeed_ = 1.25f;
-    private const float diagnolFastSpeed_ = 5f;
-    private const float dashSpeed_ = 25;
+    [SerializeField] private float normalSpeed_ = 5f;
+    [SerializeField] private float maxSpeed_ = 10f;
+    [SerializeField] private float lowestSpeed_ = 2.5f;
+    [SerializeField] private float diagnolSpeed_ = 2.5f;
+    [SerializeField] private float diagnolSlowSpeed_ = 1.25f;
+    [SerializeField] private float diagnolFastSpeed_ = 5f;
+    [SerializeField] private float dashSpeed_ = 25;
 
     // Movement variables
-    private float currSpeed_ = normalSpeed_;
+    [SerializeField] private float currSpeed_;
     private float x_;
     private float y_;
     private Vector2 currVelocity_;
@@ -270,7 +270,6 @@ public class Move : MonoBehaviour
 
         //this.SetWithDelay(defaultSpeed, SetCurrentSpeed, 5f);
         currSpeed_ = defaultSpeed;
-        this.SetWithDelay(false, SetIsDashing, coolDownDuration);
         //isDashing_ = false;
     }
     // Dashing coroutine
@@ -278,7 +277,6 @@ public class Move : MonoBehaviour
     {
         return StartDash(dashDuration, 0);
     }
-
 
     public IEnumerator StartDash()
     {

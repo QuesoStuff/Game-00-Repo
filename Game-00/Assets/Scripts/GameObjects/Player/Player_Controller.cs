@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class Player_Controller : MonoBehaviour
 {
-    [SerializeField] internal Player_Main player_Main_;
+    [SerializeField] public Player_Main player_Main_;
     //GameObject bulletPrefab = Resources.Load<GameObject>(CONSTANTS.Bullet_Tag);
     Object bulletPrefab;
 
@@ -27,9 +27,8 @@ public class Player_Controller : MonoBehaviour
         if (bullet_Main != null)
         {
             Vector2 velocity = player_Main_.player_Direction_.GetDirection();
-            velocity = velocity * player_Main_.player_Move_.GetCurrSpeed();
-            bullet_Main.Bullet_Move_.Set(velocity);
-            //bullet_Main.bullet_Controller_.Bullet_Speed();
+            velocity = velocity * player_Main_.player_Move_.GetCurrSpeed() / 10;
+            bullet_Main.bullet_Move_.Set(velocity);
         }
     }
     public void Move_Four_Directions()

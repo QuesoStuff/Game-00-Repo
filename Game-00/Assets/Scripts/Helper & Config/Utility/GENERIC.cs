@@ -175,12 +175,31 @@ public static class GENERIC
             formattedString = "0" + formattedString;
         return formattedString;
     }
-
+    /*
+        public static void MakeSingleton<T>(ref T instance, T thisInstance, GameObject thisGameObject) where T : class
+        {
+            if (instance == null)
+            {
+                instance = thisInstance;
+                UnityEngine.Object.DontDestroyOnLoad(thisGameObject);
+            }
+            else
+            {
+                UnityEngine.Object.Destroy(thisGameObject);
+            }
+        }
+    */
     public static void MakeSingleton<T>(ref T instance, T thisInstance, GameObject thisGameObject) where T : class
     {
         if (instance == null)
         {
             instance = thisInstance;
+            // Check if the GameObject has a parent transform
+            if (thisGameObject.transform.parent != null)
+            {
+                // Detach the GameObject from its parent
+                thisGameObject.transform.parent = null;
+            }
             UnityEngine.Object.DontDestroyOnLoad(thisGameObject);
         }
         else
@@ -235,13 +254,16 @@ public static class GENERIC
         onComplete?.Invoke();
     }
 */
-    private static IEnumerator FlashColorCoroutine<T>(T target, Color flashColor, float speed, Func<bool> condition, Action<Color> setColor, Func<Color> getColor, Action onComplete) where T : MonoBehaviour
+    private delegate float TimeGetter();
+
+    private static IEnumerator FlashColorCoroutine<T>(T target, Color flashColor, float speed, Func<bool> condition, Action<Color> setColor, Func<Color> getColor, Action onComplete, TimeGetter getTime) where T : MonoBehaviour
     {
         Color originalColor = getColor();
+        float startTime = getTime();
         while (condition())
         {
             Color newColor;
-            if (Mathf.Sin(UnityEngine.Time.time * speed) > 0)
+            if (Mathf.Sin((getTime() - startTime) * speed) > 0)
                 newColor = flashColor;
             else
                 newColor = originalColor;
@@ -252,46 +274,28 @@ public static class GENERIC
         onComplete?.Invoke();
     }
 
-    private static IEnumerator FlashColorCoroutineRealTime<T>(T target, Color flashColor, float speed, Func<bool> condition, Action<Color> setColor, Func<Color> getColor, Action onComplete) where T : MonoBehaviour
+    public static Coroutine FlashColorIndefinitely<T>(this MonoBehaviour monoBehaviour, T target, Color flashColor, float speed, Func<bool> shouldContinueFlashing, Action<Color> setColor, Func<Color> getColor, Action onComplete = null) where T : MonoBehaviour
     {
-        Color originalColor = getColor();
-        float startTime = Time.realtimeSinceStartup;
-        while (condition())
-        {
-            Color newColor;
-            if (Mathf.Sin((UnityEngine.Time.realtimeSinceStartup - startTime) * speed) > 0)
-                newColor = flashColor;
-            else
-                newColor = originalColor;
-            setColor(newColor);
-            yield return null;
-        }
-        setColor(originalColor);
-        onComplete?.Invoke();
+        return monoBehaviour.StartCoroutine(FlashColorCoroutine(target, flashColor, speed, shouldContinueFlashing, setColor, getColor, onComplete, () => Time.realtimeSinceStartup));
     }
 
-    public static Coroutine FlashColorIndefinitely<T>(T target, Color flashColor, float speed, Func<bool> shouldContinueFlashing, Action<Color> setColor, Func<Color> getColor, Action onComplete = null) where T : MonoBehaviour
-    {
-        return target.StartCoroutine(FlashColorCoroutine(target, flashColor, speed, shouldContinueFlashing, setColor, getColor, onComplete));
-    }
-
-    public static Coroutine FlashColorWithDuration<T>(T target, Color flashColor, float duration, float speed, Action<Color> setColor, Func<Color> getColor, Action onComplete = null) where T : MonoBehaviour
+    public static Coroutine FlashColorWithDuration<T>(this MonoBehaviour monoBehaviour, T target, Color flashColor, float duration, float speed, Action<Color> setColor, Func<Color> getColor, Action onComplete = null) where T : MonoBehaviour
     {
         var startTime = Time.time;
         Func<bool> condition = () => Time.time < startTime + duration;
-        return target.StartCoroutine(FlashColorCoroutine(target, flashColor, speed, condition, setColor, getColor, onComplete));
+        return monoBehaviour.StartCoroutine(FlashColorCoroutine(target, flashColor, speed, condition, setColor, getColor, onComplete, () => Time.time));
     }
 
-    public static Coroutine FlashColorIndefinitelyRealTime<T>(T target, Color flashColor, float speed, Func<bool> shouldContinueFlashing, Action<Color> setColor, Func<Color> getColor, Action onComplete = null) where T : MonoBehaviour
+    public static Coroutine FlashColorIndefinitelyRealTime<T>(this MonoBehaviour monoBehaviour, T target, Color flashColor, float speed, Func<bool> shouldContinueFlashing, Action<Color> setColor, Func<Color> getColor, Action onComplete = null) where T : MonoBehaviour
     {
-        return target.StartCoroutine(FlashColorCoroutineRealTime(target, flashColor, speed, shouldContinueFlashing, setColor, getColor, onComplete));
+        return monoBehaviour.StartCoroutine(FlashColorCoroutine(target, flashColor, speed, shouldContinueFlashing, setColor, getColor, onComplete, () => Time.realtimeSinceStartup));
     }
 
-    public static Coroutine FlashColorWithDurationRealTime<T>(T target, Color flashColor, float duration, float speed, Action<Color> setColor, Func<Color> getColor, Action onComplete = null) where T : MonoBehaviour
+    public static Coroutine FlashColorWithDurationRealTime<T>(this MonoBehaviour monoBehaviour, T target, Color flashColor, float duration, float speed, Action<Color> setColor, Func<Color> getColor, Action onComplete = null) where T : MonoBehaviour
     {
         var startTime = Time.realtimeSinceStartup;
         Func<bool> condition = () => Time.realtimeSinceStartup < startTime + duration;
-        return target.StartCoroutine(FlashColorCoroutineRealTime(target, flashColor, speed, condition, setColor, getColor, onComplete));
+        return monoBehaviour.StartCoroutine(FlashColorCoroutine(target, flashColor, speed, condition, setColor, getColor, onComplete, () => Time.realtimeSinceStartup));
     }
 
     public static void Set<T>(float delay, Action setAction, T value, MonoBehaviour singleton)
@@ -394,4 +398,12 @@ public static class GENERIC
         UnityEngine.Object.Destroy(newGameObject, lifeTime);
         return newGameObject;
     }
+
+    public static void AddToAction(ref Action existingAction, Action newAction)
+    {
+        existingAction += newAction;
+    }
+
+
+
 }

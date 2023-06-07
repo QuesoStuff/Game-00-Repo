@@ -5,8 +5,8 @@ using UnityEngine;
 public class Bullet_Controller : MonoBehaviour
 {
     // Start is called before the first frame update
-    [SerializeField] internal Bullet_Main bullet_Main_;
-    public static int activeBulletCount_;
+    [SerializeField] public Bullet_Main bullet_Main_;
+    private static int activeBulletCount_;
 
     void Start()
     {
@@ -34,20 +34,19 @@ public class Bullet_Controller : MonoBehaviour
     {
         if (activeBulletCount_ < 2)
         {
-            bullet_Main_.Bullet_Move_.Set(bullet_Main_.Bullet_Move_.GetNormalSpeed() * 5);
+            bullet_Main_.bullet_Move_.Set(bullet_Main_.bullet_Move_.GetNormalSpeed() * 5);
         }
         else if (activeBulletCount_ < 5)
         {
-            bullet_Main_.Bullet_Move_.Set(bullet_Main_.Bullet_Move_.GetNormalSpeed() / 2);
+            bullet_Main_.bullet_Move_.Set(bullet_Main_.bullet_Move_.GetNormalSpeed() / 2);
         }
         else if (activeBulletCount_ < 10)
         {
-            bullet_Main_.Bullet_Move_.Set(bullet_Main_.Bullet_Move_.GetNormalSpeed() / 4);
+            bullet_Main_.bullet_Move_.Set(bullet_Main_.bullet_Move_.GetNormalSpeed() / 4);
         }
         else
         {
-            bullet_Main_.Bullet_Move_.Set(bullet_Main_.Bullet_Move_.GetNormalSpeed() / 5);
-
+            bullet_Main_.bullet_Move_.Set(bullet_Main_.bullet_Move_.GetNormalSpeed() / 5);
         }
     }
     // accelerate 

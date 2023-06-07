@@ -4,9 +4,9 @@ using UnityEngine;
 
 public class Record_Controller : MonoBehaviour
 {
-    [SerializeField] internal Position target_Position_;
-    [SerializeField] internal Record_Main records_Main_;
-    [SerializeField] internal Health target_health_;
+    [SerializeField] public Position target_Position_;
+    [SerializeField] public Record_Main records_Main_;
+    [SerializeField] public Health target_health_;
 
     // Increases the bullet count in the record
     public void TriggerPulled()

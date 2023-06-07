@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class UI_Traveled : UI
 {
-    [SerializeField] internal Record_Main records_;
+    [SerializeField] public Record_Main records_;
 
     public override void Update_UI()
     {

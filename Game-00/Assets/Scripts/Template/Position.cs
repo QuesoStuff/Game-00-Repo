@@ -7,7 +7,7 @@ public class Position : MonoBehaviour
 
     private Vector2 currPosition_;
     private Vector2 prevPosition_;
-    [SerializeField] internal Transform target_;
+    [SerializeField] public Transform target_;
 
 
     public void SetPosition()

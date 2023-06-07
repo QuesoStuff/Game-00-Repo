@@ -3,8 +3,8 @@ using UnityEngine.UI;
 
 public class UI_GameObject : UI
 {
-    [SerializeField] internal Transform target;
-    [SerializeField] internal Vector3 offset = new Vector3(0, 2, 0);
+    [SerializeField] public Transform target_;
+    [SerializeField] public Vector3 offset_ = new Vector3(0, 2, 0);
     private Camera mainCamera;
 
     void Start()
@@ -19,7 +19,7 @@ public class UI_GameObject : UI
 
     public override void Update_UI()
     {
-        Vector3 screenPos = mainCamera.WorldToScreenPoint(target.position + offset);
+        Vector3 screenPos = mainCamera.WorldToScreenPoint(target_.position + offset_);
         textBox.transform.position = screenPos;
     }
 

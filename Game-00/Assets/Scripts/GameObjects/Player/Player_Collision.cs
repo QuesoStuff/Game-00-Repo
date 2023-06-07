@@ -5,7 +5,7 @@ using UnityEngine;
 
 public class Player_Collision : Collision
 {
-    [SerializeField] internal Player_Main player_Main_;
+    [SerializeField] public Player_Main player_Main_;
 
     public override void Congfigure_table_OnCollisionEnter2D()
     {

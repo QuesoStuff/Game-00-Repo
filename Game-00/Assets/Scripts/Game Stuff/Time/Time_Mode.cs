@@ -5,9 +5,9 @@ using UnityEngine;
 
 public abstract class Time_Mode : MonoBehaviour
 {
-    protected float duration_;
-    protected float elapsedTime_;
-    protected bool isRunning_;
+    [SerializeField] protected float duration_;
+    [SerializeField] protected float elapsedTime_;
+    [SerializeField] protected bool isRunning_;
     public event Action OnDeath;
 
     public Time_Mode(float duration)

@@ -4,13 +4,13 @@ using UnityEngine;
 
 public class CameraControl : MonoBehaviour
 {
-    private float followSpeed_ = 2f;
-    private float trackingSpeed_ = 0.5f;
-    private float yOffset_ = 1f;
-    private float zOffset_ = -10f;
-    [SerializeField] internal Transform target_;
-    [SerializeField] internal Move target_Movement_;
-    private float zoom_ = 10;
+    [SerializeField] private float followSpeed_ = 2f;
+    [SerializeField] private float trackingSpeed_ = 0.5f;
+    [SerializeField] private float yOffset_ = 1f;
+    [SerializeField] private float zOffset_ = -10f;
+    [SerializeField] public Transform target_;
+    [SerializeField] public Move target_Movement_;
+    [SerializeField] private float zoom_ = 10;
     private CONSTANTS.CAMERA_FOLLOW_MODE cameraMode_;
 
     public void Start()

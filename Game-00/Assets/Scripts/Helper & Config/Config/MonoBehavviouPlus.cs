@@ -2,9 +2,9 @@ using UnityEngine;
 
 public abstract class MonoBehaviour_Plus : MonoBehaviour
 {
-    [SerializeField] internal Animator animator;
-    [SerializeField] internal Rigidbody2D rb2d;
-    [SerializeField] internal SpriteRenderer spriterender;
+    [SerializeField] public Animator animator;
+    [SerializeField] public Rigidbody2D rb2d;
+    [SerializeField] public SpriteRenderer spriterender;
 
     public Animator GetAnimator()
     {

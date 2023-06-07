@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class Player_Sound : Sound
 {
-    [SerializeField] internal Player_Main player_Main_;
+    [SerializeField] public Player_Main player_Main_;
 
 
     public void FullHealth()

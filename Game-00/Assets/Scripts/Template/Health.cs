@@ -5,16 +5,37 @@ using UnityEngine;
 
 public class Health : MonoBehaviour
 {
-    private float hpCurr_ = 2;
-    private float hpMax_ = 10;
-    private float hpDamage_;
-    private float hpHeal_;
-    public event Action OnDeath;
-    public event Action OnHeal_Extra;
-    public event Action OnMaxHeal;
-    public event Action OnFullHeal;
-    public event Action OnExtraMaxHP;
+    [SerializeField] private float hpCurr_ = 2;
+    [SerializeField] private float hpMax_ = 10;
+    [SerializeField] private float hpDamage_;
+    [SerializeField] private float hpHeal_;
+    private event Action OnDeath;
+    private event Action OnHeal_Extra;
+    private event Action OnMaxHeal;
+    private event Action OnFullHeal;
+    private event Action OnExtraMaxHP;
 
+
+    public void AddToAction_OnDeath(Action addAction)
+    {
+        GENERIC.AddToAction(ref OnDeath, addAction);
+    }
+    public void AddToAction_OnHeal_Extra(Action addAction)
+    {
+        GENERIC.AddToAction(ref OnHeal_Extra, addAction);
+    }
+    public void AddToAction_OnMaxHeal(Action addAction)
+    {
+        GENERIC.AddToAction(ref OnMaxHeal, addAction);
+    }
+    public void AddToAction_OnFullHeal(Action addAction)
+    {
+        GENERIC.AddToAction(ref OnFullHeal, addAction);
+    }
+    public void AddToAction_OnExtraMaxHP(Action addAction)
+    {
+        GENERIC.AddToAction(ref OnExtraMaxHP, addAction);
+    }
     public float GetCurrHP()
     {
         return hpCurr_;

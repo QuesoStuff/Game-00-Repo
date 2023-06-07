@@ -3,10 +3,10 @@ using UnityEngine;
 
 public abstract class GameObjectColor : MonoBehaviour
 {
-    private Color currentColor_;
-    private Color defaultColor_;
-    private float blinkingDuration_;
-    private float speed_;
+    [SerializeField] protected Color currentColor_;
+    [SerializeField] protected Color defaultColor_;
+    [SerializeField] protected float blinkingDuration_;
+    [SerializeField] protected float speed_;
 
 
 
@@ -53,11 +53,11 @@ public abstract class GameObjectColor : MonoBehaviour
 
     public void BlinkColorContinuos()
     {
-        GENERIC.FlashColorIndefinitely(this, defaultColor_, speed_, () => true, SetCurrentColor, GetCurrentColor);
+        this.FlashColorIndefinitely(this, defaultColor_, speed_, () => true, SetCurrentColor, GetCurrentColor);
     }
 
     public void BlinkColor()
     {
-        GENERIC.FlashColorWithDuration(this, defaultColor_, blinkingDuration_, speed_, SetCurrentColor, GetCurrentColor);
+        this.FlashColorWithDuration(this, defaultColor_, blinkingDuration_, speed_, SetCurrentColor, GetCurrentColor);
     }
 }

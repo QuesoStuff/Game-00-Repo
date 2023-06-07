@@ -5,7 +5,7 @@ using UnityEngine;
 
 public class Bullet_Collision : Collision
 {
-    [SerializeField] internal Bullet_Main bullet_Main_;
+    [SerializeField] public Bullet_Main bullet_Main_;
 
     // Start is called before the first frame update
     public override void Congfigure_table_OnCollisionEnter2D()

@@ -23,10 +23,29 @@ public abstract class Collision : MonoBehaviour
         Congfigure_table_OnTriggerExit2D();
     }
 
-    public event Action OnCollisionEnter2D_Method;
-    public event Action OnCollisionExit2D_Method;
-    public event Action OnTriggerEnter2D_Method;
-    public event Action OnTriggerExit2D_Method;
+    private event Action OnCollisionEnter2D_Method;
+    private event Action OnCollisionExit2D_Method;
+    private event Action OnTriggerEnter2D_Method;
+    private event Action OnTriggerExit2D_Method;
+
+    /*
+        public void AddToAction_OnCollisionEnter2D(Action addAction)
+        {
+            GENERIC.AddToAction(ref OnCollisionEnter2D_Method, addAction);
+        }
+        public void AddToAction_OnCollisionExit2(Action addAction)
+        {
+            GENERIC.AddToAction(ref OnCollisionEnter2D_Method, addAction);
+        }
+        public void AddToAction_OnTriggerEnter2D(Action addAction)
+        {
+            GENERIC.AddToAction(ref OnCollisionEnter2D_Method, addAction);
+        }
+        public void AddToAction_OnTriggerExit2D(Action addAction)
+        {
+            GENERIC.AddToAction(ref OnCollisionEnter2D_Method, addAction);
+        }
+    */
 
     // 2D collision enter
     public void OnCollisionEnter2D(Collision2D collision)

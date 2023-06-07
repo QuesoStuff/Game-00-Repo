@@ -11,11 +11,11 @@ public class UI_pause_Resume : UI
         string mess = "";
         if (currState == CONSTANTS.GAME_STATE.PLAY)
         {
-            mess = CONSTANTS.GAME_STATE_MESSAGE_PLAY;
+            mess = CONSTANTS_UI.GAME_STATE_MESSAGE_PLAY;
         }
         else if (currState == CONSTANTS.GAME_STATE.PAUSE)
         {
-            mess = CONSTANTS.GAME_STATE_MESSAGE_PAUSE;
+            mess = CONSTANTS_UI.GAME_STATE_MESSAGE_PAUSE;
         }
         Update_UI_Text(mess);
     }

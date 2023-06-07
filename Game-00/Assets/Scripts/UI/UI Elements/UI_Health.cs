@@ -5,7 +5,7 @@ using UnityEngine.UI; // Or TMPro if you're using TextMeshPro
 
 public class UI_Health : UI
 {
-    [SerializeField] internal Health target_Health_;
+    [SerializeField] public Health target_Health_;
     private float currHP_;
     private float maxHP_;
     private string colorCode_;

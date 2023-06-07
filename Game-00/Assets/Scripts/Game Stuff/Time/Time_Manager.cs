@@ -7,7 +7,7 @@ public class Time_Manager : MonoBehaviour
     private CONSTANTS.TIME_MODE currentMode_;
     //[SerializeField] private Timer timer_;
     //[SerializeField] private Clock clock_;
-    [SerializeField] private Time_Mode currTimeSetup;
+    private Time_Mode currTimeSetup_;
 
     public static Time_Manager instance_;
 
@@ -38,11 +38,11 @@ public class Time_Manager : MonoBehaviour
 
     public float GetTime()
     {
-        return currTimeSetup.GetTime(); // Use polymorphism to get the current time
+        return currTimeSetup_.GetTime(); // Use polymorphism to get the current time
     }
     public float GetDuration()
     {
-        return currTimeSetup.GetDuration(); // Use polymorphism to get the current time
+        return currTimeSetup_.GetDuration(); // Use polymorphism to get the current time
     }
     public CONSTANTS.TIME_MODE GetMode()
     {
@@ -55,11 +55,11 @@ public class Time_Manager : MonoBehaviour
 
         if (mode == CONSTANTS.TIME_MODE.TIMER_MODE)
         {
-            currTimeSetup = new Timer(duration); // Create a new Timer instance
+            currTimeSetup_ = new Timer(duration); // Create a new Timer instance
         }
         else if (mode == CONSTANTS.TIME_MODE.CLOCK_MODE)
         {
-            currTimeSetup = new Clock(duration); // Create a new Clock instance
+            currTimeSetup_ = new Clock(duration); // Create a new Clock instance
         }
         else
         {
@@ -67,27 +67,27 @@ public class Time_Manager : MonoBehaviour
             return;
         }
 
-        currTimeSetup.StartTime(); // Start the new time mode
+        currTimeSetup_.StartTime(); // Start the new time mode
         currentMode_ = mode;
     }
 
     private void StopTimeIfRunning()
     {
-        if (currTimeSetup != null && currTimeSetup.GetIsRunning())
+        if (currTimeSetup_ != null && currTimeSetup_.GetIsRunning())
         {
-            currTimeSetup.Stop(); // Stop the current time mode
+            currTimeSetup_.Stop(); // Stop the current time mode
         }
     }
     public void Running()
     {
         if (GetIsRunning())
         {
-            currTimeSetup.Running();
+            currTimeSetup_.Running();
         }
     }
     public bool GetIsRunning()
     {
-        return currTimeSetup.GetIsRunning();
+        return currTimeSetup_.GetIsRunning();
 
     }
 

@@ -5,13 +5,13 @@ using UnityEngine;
 public class Player_Main : MonoBehaviour_Plus
 {
 
-    [SerializeField] internal Player_Controller player_Controller_;
-    [SerializeField] internal Collision player_Collision_;
-    [SerializeField] internal Player_Sound player_Sound_;
-    [SerializeField] internal Health player_Health_;
-    [SerializeField] internal Move player_Move_;
-    [SerializeField] internal Position player_Position_;
-    [SerializeField] internal Direction player_Direction_;
+    [SerializeField] public Player_Controller player_Controller_;
+    [SerializeField] public Collision player_Collision_;
+    [SerializeField] public Player_Sound player_Sound_;
+    [SerializeField] public Health player_Health_;
+    [SerializeField] public Move player_Move_;
+    [SerializeField] public Position player_Position_;
+    [SerializeField] public Direction player_Direction_;
 
     public static Player_Main instance_;
 
@@ -20,8 +20,8 @@ public class Player_Main : MonoBehaviour_Plus
     {
         GENERIC.MakeSingleton(ref instance_, this, this.gameObject);
         player_Collision_.Congfigure_CollisionTables();
-        player_Health_.OnDeath += GENERIC.RestartScene;
-        player_Health_.OnMaxHeal += player_Sound_.FullHealth;
+        player_Health_.AddToAction_OnDeath(GENERIC.RestartScene);
+        player_Health_.AddToAction_OnMaxHeal(player_Sound_.FullHealth);
     }
     // Start is called before the first frame update
     void Start()

@@ -4,8 +4,8 @@ using UnityEngine;
 
 public abstract class Sound : MonoBehaviour
 {
-    [SerializeField] internal AudioSource audioSourcea_;
-    [SerializeField] internal AudioClip[] audioClips_;
+    [SerializeField] protected AudioSource audioSourcea_;
+    [SerializeField] protected AudioClip[] audioClips_;
     private int currIndex_;
 
     // Plays a sound clip at the specified index

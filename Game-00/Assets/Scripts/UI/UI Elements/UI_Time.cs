@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class UI_Time : UI
 {
-    [SerializeField] internal Time_Manager time_;
+    [SerializeField] public Time_Manager time_;
     private float elapsedTime_;
     private float duration_;
 

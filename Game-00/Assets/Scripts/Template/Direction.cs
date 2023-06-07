@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class Direction : MonoBehaviour
 {
-    [SerializeField] internal Move target_Velocity_;
+    [SerializeField] public Move target_Velocity_;
     private Vector2 currDirection_;
     private Vector2 prevDirection_;
 

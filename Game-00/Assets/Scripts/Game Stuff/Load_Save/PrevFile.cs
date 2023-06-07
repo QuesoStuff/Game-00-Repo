@@ -5,7 +5,7 @@ using UnityEngine;
 public class PrevFile : MonoBehaviour
 {
     public static PrevFile instance_;
-    public FileData highestRecord;
+    private FileData highestRecord;
 
     private void Awake()
     {

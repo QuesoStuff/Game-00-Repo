@@ -40,10 +40,7 @@ public static class CONSTANTS
     public const float TRAVELING_DISTANCE_RATE = 225;
     public const float DEFAULT_SCORE = 1;
 
-    // Game states
-    public const string GAME_STATE_MESSAGE_PAUSE = "-- Paused --";
-    public const string GAME_STATE_MESSAGE_PLAY = "";
-    public const string GAME_STATE_MESSAGE_END = "-- End --";
+
 
     // newly added 
     public const float CLOCK_TIME_LIMIT = 20 * 60;
