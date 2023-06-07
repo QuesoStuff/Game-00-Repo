@@ -189,6 +189,7 @@ public static class GENERIC
             }
         }
     */
+
     public static void MakeSingleton<T>(ref T instance, T thisInstance, GameObject thisGameObject) where T : class
     {
         if (instance == null)
@@ -198,7 +199,7 @@ public static class GENERIC
             if (thisGameObject.transform.parent != null)
             {
                 // Detach the GameObject from its parent
-                thisGameObject.transform.parent = null;
+                thisGameObject.transform.SetParent(null, false);
             }
             UnityEngine.Object.DontDestroyOnLoad(thisGameObject);
         }
@@ -207,6 +208,7 @@ public static class GENERIC
             UnityEngine.Object.Destroy(thisGameObject);
         }
     }
+
 
     public static Vector2 GetDirection(Vector2 vector)
     {
@@ -256,7 +258,7 @@ public static class GENERIC
 */
     private delegate float TimeGetter();
 
-    private static IEnumerator FlashColorCoroutine<T>(T target, Color flashColor, float speed, Func<bool> condition, Action<Color> setColor, Func<Color> getColor, Action onComplete, TimeGetter getTime) where T : MonoBehaviour
+    private static IEnumerator FlashColorCoroutine(Color flashColor, float speed, Func<bool> condition, Action<Color> setColor, Func<Color> getColor, Action onComplete, TimeGetter getTime)
     {
         Color originalColor = getColor();
         float startTime = getTime();
@@ -274,41 +276,30 @@ public static class GENERIC
         onComplete?.Invoke();
     }
 
-    public static Coroutine FlashColorIndefinitely<T>(this MonoBehaviour monoBehaviour, T target, Color flashColor, float speed, Func<bool> shouldContinueFlashing, Action<Color> setColor, Func<Color> getColor, Action onComplete = null) where T : MonoBehaviour
+    public static Coroutine FlashColorIndefinitely(this MonoBehaviour monoBehaviour, Color flashColor, float speed, Func<bool> shouldContinueFlashing, Action<Color> setColor, Func<Color> getColor, Action onComplete = null)
     {
-        return monoBehaviour.StartCoroutine(FlashColorCoroutine(target, flashColor, speed, shouldContinueFlashing, setColor, getColor, onComplete, () => Time.realtimeSinceStartup));
+        return monoBehaviour.StartCoroutine(FlashColorCoroutine(flashColor, speed, shouldContinueFlashing, setColor, getColor, onComplete, () => Time.realtimeSinceStartup));
     }
 
-    public static Coroutine FlashColorWithDuration<T>(this MonoBehaviour monoBehaviour, T target, Color flashColor, float duration, float speed, Action<Color> setColor, Func<Color> getColor, Action onComplete = null) where T : MonoBehaviour
+    public static Coroutine FlashColorWithDuration(this MonoBehaviour monoBehaviour, Color flashColor, float duration, float speed, Action<Color> setColor, Func<Color> getColor, Action onComplete = null)
     {
         var startTime = Time.time;
         Func<bool> condition = () => Time.time < startTime + duration;
-        return monoBehaviour.StartCoroutine(FlashColorCoroutine(target, flashColor, speed, condition, setColor, getColor, onComplete, () => Time.time));
+        return monoBehaviour.StartCoroutine(FlashColorCoroutine(flashColor, speed, condition, setColor, getColor, onComplete, () => Time.time));
     }
 
-    public static Coroutine FlashColorIndefinitelyRealTime<T>(this MonoBehaviour monoBehaviour, T target, Color flashColor, float speed, Func<bool> shouldContinueFlashing, Action<Color> setColor, Func<Color> getColor, Action onComplete = null) where T : MonoBehaviour
+    public static Coroutine FlashColorIndefinitelyRealTime(this MonoBehaviour monoBehaviour, Color flashColor, float speed, Func<bool> shouldContinueFlashing, Action<Color> setColor, Func<Color> getColor, Action onComplete = null)
     {
-        return monoBehaviour.StartCoroutine(FlashColorCoroutine(target, flashColor, speed, shouldContinueFlashing, setColor, getColor, onComplete, () => Time.realtimeSinceStartup));
+        return monoBehaviour.StartCoroutine(FlashColorCoroutine(flashColor, speed, shouldContinueFlashing, setColor, getColor, onComplete, () => Time.realtimeSinceStartup));
     }
 
-    public static Coroutine FlashColorWithDurationRealTime<T>(this MonoBehaviour monoBehaviour, T target, Color flashColor, float duration, float speed, Action<Color> setColor, Func<Color> getColor, Action onComplete = null) where T : MonoBehaviour
+    public static Coroutine FlashColorWithDurationRealTime(this MonoBehaviour monoBehaviour, Color flashColor, float duration, float speed, Action<Color> setColor, Func<Color> getColor, Action onComplete = null)
     {
         var startTime = Time.realtimeSinceStartup;
         Func<bool> condition = () => Time.realtimeSinceStartup < startTime + duration;
-        return monoBehaviour.StartCoroutine(FlashColorCoroutine(target, flashColor, speed, condition, setColor, getColor, onComplete, () => Time.realtimeSinceStartup));
+        return monoBehaviour.StartCoroutine(FlashColorCoroutine(flashColor, speed, condition, setColor, getColor, onComplete, () => Time.realtimeSinceStartup));
     }
 
-    public static void Set<T>(float delay, Action setAction, T value, MonoBehaviour singleton)
-    {
-        singleton.StartCoroutine(DelayedSetExecution(delay, setAction, value, singleton));
-    }
-
-    private static IEnumerator DelayedSetExecution<T>(float delay, Action setAction, T value, MonoBehaviour singleton)
-    {
-        yield return new WaitForSeconds(delay);
-        setAction?.Invoke();
-        Set(value);
-    }
 
     private static void Set<T>(T value)
     {
@@ -405,5 +396,18 @@ public static class GENERIC
     }
 
 
+    // may need o be deleted 
+    /*
+        public static void Set<T>(float delay, Action setAction, T value, MonoBehaviour singleton)
+        {
+            singleton.StartCoroutine(DelayedSetExecution(delay, setAction, value, singleton));
+        }
 
+        private static IEnumerator DelayedSetExecution<T>(float delay, Action setAction, T value, MonoBehaviour singleton)
+        {
+            yield return new WaitForSeconds(delay);
+            setAction?.Invoke();
+            Set(value);
+        }
+    */
 }

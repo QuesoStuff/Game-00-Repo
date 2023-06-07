@@ -3,13 +3,17 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public abstract class Time_Mode : MonoBehaviour
+public abstract class Time_Mode
 {
     [SerializeField] protected float duration_;
     [SerializeField] protected float elapsedTime_;
     [SerializeField] protected bool isRunning_;
-    public event Action OnDeath;
+    private event Action OnDeath;
 
+    public void AddToAction_OnDeath(Action addAction)
+    {
+        GENERIC.AddToAction(ref OnDeath, addAction);
+    }
     public Time_Mode(float duration)
     {
         this.duration_ = duration;

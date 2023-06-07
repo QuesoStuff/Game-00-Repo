@@ -53,11 +53,11 @@ public abstract class GameObjectColor : MonoBehaviour
 
     public void BlinkColorContinuos()
     {
-        this.FlashColorIndefinitely(this, defaultColor_, speed_, () => true, SetCurrentColor, GetCurrentColor);
+        this.FlashColorIndefinitely(defaultColor_, speed_, () => true, SetCurrentColor, GetCurrentColor);
     }
 
     public void BlinkColor()
     {
-        this.FlashColorWithDuration(this, defaultColor_, blinkingDuration_, speed_, SetCurrentColor, GetCurrentColor);
+        this.FlashColorWithDuration(defaultColor_, blinkingDuration_, speed_, SetCurrentColor, GetCurrentColor);
     }
 }

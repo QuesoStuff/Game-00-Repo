@@ -268,9 +268,10 @@ public class Move : MonoBehaviour
             yield return null;
         }
 
-        //this.SetWithDelay(defaultSpeed, SetCurrentSpeed, 5f);
         currSpeed_ = defaultSpeed;
         //isDashing_ = false;
+        this.SetWithDelay(isDashing_, _ => isDashing_ = false, 5);
+
     }
     // Dashing coroutine
     public IEnumerator StartDash(float dashDuration)

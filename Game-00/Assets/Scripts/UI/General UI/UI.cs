@@ -109,7 +109,6 @@ public abstract class UI : MonoBehaviour
         StopBlinking();
         originalColor_ = textBox.color;
         currentBlinkCoroutine_ = this.FlashColorWithDuration(
-            textBox,
             color,
             duration_,
             speed_,
@@ -125,7 +124,6 @@ public abstract class UI : MonoBehaviour
         StopBlinking();
         originalColor_ = textBox.color;
         currentBlinkCoroutine_ = this.FlashColorIndefinitely(
-            textBox,
             color,
             speed_,
             () => true,
@@ -134,5 +132,6 @@ public abstract class UI : MonoBehaviour
         );
         SetIsBlinking(currentBlinkCoroutine_ != null);
     }
+
     public abstract void Update_UI();
 }
