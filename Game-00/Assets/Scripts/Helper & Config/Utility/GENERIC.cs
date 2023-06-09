@@ -88,30 +88,13 @@ public static class GENERIC
         rb2d.velocity = direction;
         return direction;
     }
-    public static Vector2 Move_GameObject(float x, float y, Rigidbody2D rb2d, float maxSpeed, float acceleration)
+    public static Vector2 Accelerate_GameObject(float x, float y, Rigidbody2D rb2d, float acceleration)
     {
-        Vector2 direction = new Vector2(x, y).normalized;
-
-        // Calculate the target velocity based on the input direction and max speed
-        Vector2 targetVelocity = direction * maxSpeed;
-
-        // Apply acceleration
-        Vector2 currentVelocity = rb2d.velocity;
-        Vector2 velocityChange = (targetVelocity - currentVelocity) * acceleration * Time.fixedDeltaTime;
-        rb2d.velocity = currentVelocity + velocityChange;
-
+        Vector2 direction = new Vector2(x, y) * acceleration;
+        rb2d.velocity += direction;
         return direction;
     }
-    public static void ChangeScale(Transform transform, float x, float y)
-    {
-        Vector2 newScale = new Vector2(x, y);
-        transform.localScale = newScale;
-    }
 
-    public static void ChangeScale(Transform transform, Vector2 newScale)
-    {
-        transform.localScale = newScale;
-    }
 
     // Collection functions
 
@@ -129,13 +112,16 @@ public static class GENERIC
 
     // Action table functions
 
-    public static void TableLookUp<TKey>(Dictionary<TKey, Action> actionTable, TKey key)
+    public static void TableLookUp<TKey>(Dictionary<TKey, List<Action>> actionTable, TKey key)
     {
-        if (actionTable != null)
+        if (actionTable != null && actionTable.TryGetValue(key, out List<Action> actions))
         {
-            if (actionTable.TryGetValue(key, out Action action))
+            if (actions != null)
             {
-                action?.Invoke();
+                foreach (Action action in actions)
+                {
+                    action?.Invoke();
+                }
             }
         }
     }
@@ -195,10 +181,8 @@ public static class GENERIC
         if (instance == null)
         {
             instance = thisInstance;
-            // Check if the GameObject has a parent transform
             if (thisGameObject.transform.parent != null)
             {
-                // Detach the GameObject from its parent
                 thisGameObject.transform.SetParent(null, false);
             }
             UnityEngine.Object.DontDestroyOnLoad(thisGameObject);
@@ -301,10 +285,7 @@ public static class GENERIC
     }
 
 
-    private static void Set<T>(T value)
-    {
-        // Perform your Set() operation here
-    }
+
 
     public static void Toggle(ref bool flip)
     {
@@ -349,17 +330,13 @@ public static class GENERIC
     private static IEnumerator ScaleRoutine(GameObject obj, Vector3 initialScale, Vector3 targetScale, float duration)
     {
         obj.transform.localScale = initialScale;
-
         float elapsedTime = 0f;
         while (elapsedTime < duration)
         {
             obj.transform.localScale = Vector3.Lerp(initialScale, targetScale, elapsedTime / duration);
-
             elapsedTime += Time.deltaTime;
             yield return null;
         }
-
-        // Ensure it's set to the target when done, as Lerp can sometimes not quite reach it
         obj.transform.localScale = targetScale;
     }
 
@@ -372,19 +349,15 @@ public static class GENERIC
 
     public static void RestartScene()
     {
-        // SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
         SceneManager.LoadScene(SceneManager.GetActiveScene().name);
-
     }
     public static GameObject SpawnGameObject(UnityEngine.Object newObject, Transform spawnPosition)
     {
-        // Instantiate the prefab at the specified position and rotation
         GameObject newGameObject = UnityEngine.Object.Instantiate(newObject as GameObject, spawnPosition.position, spawnPosition.rotation);
         return newGameObject;
     }
     public static GameObject SpawnGameObject(GameObject newObject, Transform spawnPosition, float lifeTime)
     {
-        // Instantiate the prefab at the specified position and rotation
         GameObject newGameObject = UnityEngine.Object.Instantiate(newObject as GameObject, spawnPosition.position, spawnPosition.rotation);
         UnityEngine.Object.Destroy(newGameObject, lifeTime);
         return newGameObject;
@@ -410,4 +383,115 @@ public static class GENERIC
             Set(value);
         }
     */
+
+    public static IEnumerator HoldColorCoroutine(Color holdColor, float holdDuration, Action<Color> setColor, Func<Color> getOriginalColor, Action onComplete = null)
+    {
+        Color originalColor = getOriginalColor();
+        setColor(holdColor);
+        yield return new WaitForSeconds(holdDuration);
+        setColor(originalColor);
+        onComplete?.Invoke();
+    }
+    public static Vector3 ChangeScale(Transform transform, Vector2 direction, Vector2 scale)
+    {
+        Vector3 currentScale = transform.localScale;
+        Vector3 newScale = currentScale;
+        if (direction.x != 0 && direction.y == 0)
+        {
+            newScale.x = scale.x * currentScale.x;
+        }
+        else if (direction.x == 0 && direction.y != 0)
+        {
+            newScale.y = scale.y * currentScale.y;
+        }
+        else
+        {
+        }
+        transform.localScale = newScale;
+        return newScale;
+    }
+
+    public static Vector3 ChangeScale(Transform transform, Vector2 direction, float scale)
+    {
+        return ChangeScale(transform, direction, new Vector2(scale, scale));
+    }
+
+
+    public static void ChangeScale(Transform transform, float x, float y)
+    {
+        Vector2 newScale = new Vector2(x, y);
+        transform.localScale = newScale;
+    }
+    public static void ChangeScale(Transform transform, Vector2 newScale)
+    {
+        transform.localScale = newScale;
+    }
+
+
+    public static void UpdateRotation_Left_Right(Transform transform, Vector2 direction)
+    {
+        if (direction.y > 0) // Up
+        {
+            transform.rotation = Quaternion.Euler(0f, 0f, 90);
+        }
+        else if (direction.y < 0) // Down
+        {
+            transform.rotation = Quaternion.Euler(0f, 0f, -90);
+        }
+        else if (direction.x > 0) // Right
+        {
+            transform.rotation = Quaternion.Euler(0f, 0f, 0);
+        }
+        else if (direction.x < 0) // Left
+        {
+            transform.rotation = Quaternion.Euler(0f, 0f, 180);
+        }
+    }
+
+
+    public static void UpdateRotation_Up_Down(Transform transform, Vector2 direction)
+    {
+        if (direction.y > 0) // Up
+        {
+            transform.rotation = Quaternion.Euler(0f, 0f, 0);
+        }
+        else if (direction.y < 0) // Down
+        {
+            transform.rotation = Quaternion.Euler(0f, 0f, 180);
+        }
+        else if (direction.x > 0) // Right
+        {
+            transform.rotation = Quaternion.Euler(0f, 0f, -90);
+        }
+        else if (direction.x < 0) // Left
+        {
+            transform.rotation = Quaternion.Euler(0f, 0f, 90);
+        }
+    }
+
+
+    public static void UpdateRotation(Transform transform, Vector2 initDirection, Vector2 currDirection)
+    {
+        Vector2 absInitDirection = new Vector2(Mathf.Abs(initDirection.x), Mathf.Abs(initDirection.y));
+
+        // Rotate based on the initial direction if the initial direction is up or down
+        if (absInitDirection == Vector2.up || absInitDirection == Vector2.down)
+        {
+            UpdateRotation_Up_Down(transform, currDirection);
+        }
+        // Rotate based on the initial direction if the initial direction is left or right
+        else if (absInitDirection == Vector2.left || absInitDirection == Vector2.right)
+        {
+            UpdateRotation_Left_Right(transform, currDirection);
+        }
+    }
+
+
 }
+
+
+
+
+
+
+

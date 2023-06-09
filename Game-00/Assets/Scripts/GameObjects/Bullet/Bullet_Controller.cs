@@ -6,51 +6,84 @@ public class Bullet_Controller : MonoBehaviour
 {
     // Start is called before the first frame update
     [SerializeField] public Bullet_Main bullet_Main_;
-    private static int activeBulletCount_;
+    [SerializeField] private Vector2 accelarte_;
+    [SerializeField] private float damage_;
+    [SerializeField] private float health_;
+    [SerializeField] private float sizeScale_;
+    [SerializeField] private float sizeDuration_;
+    [SerializeField] private float lazerLength_;
 
-    void Start()
+
+    public void Bullet_Configuration_Stat()
     {
-
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-
-    }
-
-
-    public void SetBulletCount(int newCOunt)
-    {
-        activeBulletCount_ = newCOunt;
-        UI_Main.instance_.UI_Debug_.Update_UI_Text(activeBulletCount_);
-    }
-    public int GetBulletCount()
-    {
-        return activeBulletCount_;
-    }
-
-    public void Bullet_Speed()
-    {
-        if (activeBulletCount_ < 2)
+        if (Bullet_Config.GetIsStatAccelerate())
         {
-            bullet_Main_.bullet_Move_.Set(bullet_Main_.bullet_Move_.GetNormalSpeed() * 5);
+            bullet_Main_.bullet_Config_.Stat_Accelarate(accelarte_);
         }
-        else if (activeBulletCount_ < 5)
+        if (Bullet_Config.GetIsStatIncreasedDamage())
         {
-            bullet_Main_.bullet_Move_.Set(bullet_Main_.bullet_Move_.GetNormalSpeed() / 2);
+            bullet_Main_.bullet_Config_.IncreaseDamage(damage_);
         }
-        else if (activeBulletCount_ < 10)
+        if (Bullet_Config.GetIsStatIncreaseHealth())
         {
-            bullet_Main_.bullet_Move_.Set(bullet_Main_.bullet_Move_.GetNormalSpeed() / 4);
+            bullet_Main_.bullet_Config_.IncreaseHealth(health_);
         }
-        else
+        if (Bullet_Config.GetIsStatUniformSpeed())
         {
-            bullet_Main_.bullet_Move_.Set(bullet_Main_.bullet_Move_.GetNormalSpeed() / 5);
+            bullet_Main_.bullet_Config_.Stat_UniformSpeed(Bullet_Config.Get_StaticSpeed());
         }
     }
-    // accelerate 
-    // shared speed 
-    // misslie mode
+    public void Bullet_Configuration_Type()
+    {
+        if (Bullet_Config.GetIsTypeLazer())
+        {
+            bullet_Main_.bullet_Config_.Config_Lazer(lazerLength_);
+        }
+        if (Bullet_Config.GetIsTypeCharged())
+        {
+            bullet_Main_.bullet_Config_.Config_ChargedShot(transform.localScale * sizeScale_, sizeDuration_);
+        }
+        //if (bullet_Main_.bullet_Config_.Get_Bullet_Type() == CONSTANTS.BULLET_TYPE.MISSLE)
+    }
+    public void Bullet_Missle_Controls()
+    {
+        if (INPUT.instance_.Input_Tap_Up())
+        {
+            bullet_Main_.bullet_Move_.Move_Up();
+            bullet_Main_.bullet_Direction_.SetDirection();
+            bullet_Main_.bullet_Direction_.Turn();
+        }
+        else if (INPUT.instance_.Input_Tap_Down())
+        {
+            bullet_Main_.bullet_Move_.Move_Down();
+            bullet_Main_.bullet_Direction_.SetDirection();
+            bullet_Main_.bullet_Direction_.Turn();
+        }
+        else if (INPUT.instance_.Input_Tap_Left())
+        {
+            bullet_Main_.bullet_Move_.Move_Left();
+            bullet_Main_.bullet_Direction_.SetDirection();
+            bullet_Main_.bullet_Direction_.Turn();
+        }
+        else if (INPUT.instance_.Input_Tap_Right())
+        {
+            bullet_Main_.bullet_Move_.Move_Right();
+            bullet_Main_.bullet_Direction_.SetDirection();
+            bullet_Main_.bullet_Direction_.Turn();
+        }
+    }
+
+    public void Bullet_Configuration()
+    {
+        Bullet_Configuration_Type();
+        Bullet_Configuration_Stat();
+    }
+
+
+
 
 }
+// accelerate 
+// shared speed 
+// misslie mode
+

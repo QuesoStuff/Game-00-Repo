@@ -8,12 +8,12 @@ public abstract class UI : MonoBehaviour
 {
     [SerializeField] internal Text textBox;
 
-    private float duration_ = 2;
-    private float speed_ = CONSTANTS.HALF_SECOND_BLINK_SPEED;
-    private Coroutine currentBlinkCoroutine_ = null;
-    private Color colorUpdate_ = Color.clear;
-    private Color colorNew_ = Color.yellow;
-    private Color originalColor_;
+    protected float duration_ = 2;
+    protected float speed_ = CONSTANTS.HALF_SECOND_BLINK_SPEED;
+    protected Coroutine currentBlinkCoroutine_ = null;
+    protected Color colorUpdate_ = Color.clear;
+    protected Color colorNew_ = Color.yellow;
+    protected Color originalColor_;
 
     private bool isBlinking_ = false;
 

@@ -37,6 +37,7 @@ public class Player_Main : MonoBehaviour_Plus
     }
     void FixedUpdate()
     {
-        player_Move_.Moving();
+        if (!Bullet_Config.GetIsTypeMissle())
+            player_Move_.Moving();
     }
 }

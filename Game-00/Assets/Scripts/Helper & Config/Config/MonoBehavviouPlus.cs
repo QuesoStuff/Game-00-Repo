@@ -6,18 +6,21 @@ public abstract class MonoBehaviour_Plus : MonoBehaviour
     [SerializeField] public Rigidbody2D rb2d;
     [SerializeField] public SpriteRenderer spriterender;
 
-    public Animator GetAnimator()
+    public void Kill(float delay)
     {
-        return animator;
+        StopAllCoroutines();
+        if (gameObject != null)
+        {
+            Destroy(gameObject, delay);
+        }
     }
 
-    public Rigidbody2D GetRigidbody2D()
+    public void Kill()
     {
-        return rb2d;
-    }
-
-    public SpriteRenderer GetSpriteRenderer()
-    {
-        return spriterender;
+        StopAllCoroutines();
+        if (gameObject != null)
+        {
+            Destroy(gameObject);
+        }
     }
 }

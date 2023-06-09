@@ -8,9 +8,10 @@ public abstract class GameObjectColor : MonoBehaviour
     [SerializeField] protected float blinkingDuration_;
     [SerializeField] protected float speed_;
 
+    // add method that allows object to change color and then return it after some time , kind of like blink
+    // but not blinking . think of hit daamge (Mega-Man)
 
-
-
+    public abstract void SetColor();
     public void SetCurrentColor(Color color)
     {
         currentColor_ = color;
@@ -60,4 +61,10 @@ public abstract class GameObjectColor : MonoBehaviour
     {
         this.FlashColorWithDuration(defaultColor_, blinkingDuration_, speed_, SetCurrentColor, GetCurrentColor);
     }
+    public void HoldColor()
+    {
+        // GENERIC.HoldColorCoroutine(Color holdColor, float holdDuration, Action<Color> setColor, Func<Color> getOriginalColor, Action onComplete = null)
+    }
+
+
 }

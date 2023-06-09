@@ -15,21 +15,11 @@ public class Player_Controller : MonoBehaviour
     }
     private void ShootProjectile()
     {
-        // Instantiate the bullet prefab at the player's position and rotation
-        GameObject bullet = Object.Instantiate(bulletPrefab as GameObject, transform.position, transform.rotation);
-        UI_Main.instance_.UI_Debug_.Update_UI_Text("NO Bullet");
-        // Customize bullet properties if necessary
-        Bullet_Main bullet_Main = bullet.GetComponent<Bullet_Main>();
-        if (INPUT.instance_.Input_Shot_Charged())
-        {
-            GENERIC.ScaleOverTime(this, bullet, Vector3.zero, 3, 0.5f);
-        }
-        if (bullet_Main != null)
-        {
-            Vector2 velocity = player_Main_.player_Direction_.GetDirection();
-            velocity = velocity * player_Main_.player_Move_.GetCurrSpeed() / 10;
-            bullet_Main.bullet_Move_.Set(velocity);
-        }
+        float bulletSpeed = player_Main_.player_Move_.GetCurrSpeed() * 2;
+        Vector2 direction = player_Main_.player_Direction_.GetDirection();
+        Vector2 velocity = direction * bulletSpeed;
+        Bullet_Main.Static_Create(transform.position, transform.rotation, velocity, (GameObject)bulletPrefab);
+
     }
     public void Move_Four_Directions()
     {
@@ -40,7 +30,7 @@ public class Player_Controller : MonoBehaviour
         }
         else if (INPUT.instance_.Input_Charged_Valid())
         {
-            player_Main_.spriterender.color = Color.blue;
+            //player_Main_.spriterender.color = Color.blue;
         }
         else if (INPUT.instance_.Input_Move_Up())
         {
@@ -48,6 +38,8 @@ public class Player_Controller : MonoBehaviour
             player_Main_.player_Direction_.SetDirection();
             Record_Main.instance_.UpdateDistanceTraveled();
             UI_Main.instance_.UI_Traveled_.Update_UI();
+            player_Main_.player_Direction_.Turn();
+
         }
         else if (INPUT.instance_.Input_Move_Down())
         {
@@ -55,6 +47,8 @@ public class Player_Controller : MonoBehaviour
             player_Main_.player_Direction_.SetDirection();
             Record_Main.instance_.UpdateDistanceTraveled();
             UI_Main.instance_.UI_Traveled_.Update_UI();
+            player_Main_.player_Direction_.Turn();
+
         }
         else if (INPUT.instance_.Input_Move_Left())
         {
@@ -62,6 +56,8 @@ public class Player_Controller : MonoBehaviour
             player_Main_.player_Direction_.SetDirection();
             Record_Main.instance_.UpdateDistanceTraveled();
             UI_Main.instance_.UI_Traveled_.Update_UI();
+            player_Main_.player_Direction_.Turn();
+
         }
         else if (INPUT.instance_.Input_Move_Right())
         {
@@ -69,6 +65,8 @@ public class Player_Controller : MonoBehaviour
             player_Main_.player_Direction_.SetDirection();
             Record_Main.instance_.UpdateDistanceTraveled();
             UI_Main.instance_.UI_Traveled_.Update_UI();
+            player_Main_.player_Direction_.Turn();
+
         }
         else if (INPUT.instance_.Input_Idle())
         {
@@ -77,6 +75,7 @@ public class Player_Controller : MonoBehaviour
         }
         if (INPUT.instance_.Input_Shot_Charged())
         {
+            Bullet_Config.SetIsTypeCharged(true);
             // add bullet !! 
             ShootProjectile();
             // add bullet !! 
@@ -85,6 +84,8 @@ public class Player_Controller : MonoBehaviour
             Record_Main.instance_.UpdateBulletCount();
             // update UI
             UI_Main.instance_.UI_BulletCount_.Update_UI();
+            Bullet_Config.SetIsTypeCharged(false);
+
         }
         else if (INPUT.instance_.Input_Trigger_Pulled())
         {

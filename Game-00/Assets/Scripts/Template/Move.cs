@@ -15,6 +15,7 @@ public class Move : MonoBehaviour
     [SerializeField] private float diagnolSlowSpeed_ = 1.25f;
     [SerializeField] private float diagnolFastSpeed_ = 5f;
     [SerializeField] private float dashSpeed_ = 25;
+    [SerializeField] private float accelerate_Speed_ = 25;
 
     // Movement variables
     [SerializeField] private float currSpeed_;
@@ -61,7 +62,14 @@ public class Move : MonoBehaviour
     {
         return currSpeed_;
     }
-
+    public float Get_AccelerateSpeed()
+    {
+        return accelerate_Speed_;
+    }
+    public void Set_AccelerateSpeed(float newAcc)
+    {
+        accelerate_Speed_ = newAcc;
+    }
     public void Set(float x, float y)
     {
         // Store previous movement values
@@ -250,10 +258,9 @@ public class Move : MonoBehaviour
         SetVelocity();
         return GENERIC.Move_GameObject(x_, y_, rb2d);
     }
-    public Vector2 Moving(float max, float acc)
+    public Vector2 Moving_Accelarate()
     {
-        SetVelocity();
-        return GENERIC.Move_GameObject(x_, y_, rb2d, max, acc);
+        return GENERIC.Accelerate_GameObject(x_, y_, rb2d, accelerate_Speed_);
     }
 
     public IEnumerator StartDash(float dashDuration, float coolDownDuration)

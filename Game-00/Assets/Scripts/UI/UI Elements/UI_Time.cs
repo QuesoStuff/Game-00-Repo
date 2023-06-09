@@ -6,7 +6,7 @@ public class UI_Time : UI
 {
     [SerializeField] public Time_Manager time_;
     private float elapsedTime_;
-    private float duration_;
+    //private float duration_;
 
     public override void Update_UI()
     {

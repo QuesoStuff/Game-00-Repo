@@ -9,8 +9,8 @@ public class Player_Collision : Collision
 
     public override void Congfigure_table_OnCollisionEnter2D()
     {
-        table_OnCollisionEnter2D_ = new Dictionary<string, Action>();
-        table_OnCollisionEnter2D_.Add(CONSTANTS.Wall_Tag, player_Main_.player_Sound_.BumpIntoWall);
+        table_OnCollisionEnter2D_ = new Dictionary<string, List<Action>>();
+        Add(table_OnCollisionEnter2D_, CONSTANTS.Wall_Tag, player_Main_.player_Sound_.BumpIntoWall);
     }
     public override void Congfigure_table_OnCollisionExit2D()
     {
