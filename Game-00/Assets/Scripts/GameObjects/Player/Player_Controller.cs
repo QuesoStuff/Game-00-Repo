@@ -31,6 +31,7 @@ public class Player_Controller : MonoBehaviour
         else if (INPUT.instance_.Input_Charged_Valid())
         {
             //player_Main_.spriterender.color = Color.blue;
+            player_Main_.player_Color_.HoldColor(Color.yellow, 0.5f);
         }
         else if (INPUT.instance_.Input_Move_Up())
         {
@@ -73,7 +74,7 @@ public class Player_Controller : MonoBehaviour
             player_Main_.player_Move_.Move_None();
             Record_Main.instance_.UpdateDistanceTraveled();
         }
-        if (INPUT.instance_.Input_Shot_Charged())
+        if (INPUT.instance_.Input_Shot_Charged() && !Bullet_Config.GetIsTypeCharged())
         {
             Bullet_Config.SetIsTypeCharged(true);
             // add bullet !! 

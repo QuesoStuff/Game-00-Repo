@@ -22,6 +22,10 @@ public class Move : MonoBehaviour
     private float x_;
     private float y_;
     private Vector2 currVelocity_;
+    [SerializeField] private float knockBackDistance_ =1;
+    [SerializeField] private float knockBackTime_ = 0.15f;
+
+
 
     // Previous movement variables
     private float x_Previous_;
@@ -289,5 +293,16 @@ public class Move : MonoBehaviour
     public IEnumerator StartDash()
     {
         return StartDash(CONSTANTS.DEFAULT_DASHING_TIME, 5f);
+    }
+
+    public void KnockBack()
+    {
+        StartCoroutine(GENERIC.KnockBack(this, currVelocity_.normalized, knockBackDistance_, knockBackTime_, rb2d));
+    }
+    public void Set_Random_Speed()
+    {
+        // Set the current speed to a random value between the lowest and maximum speed
+        currSpeed_ = GENERIC.GetRandomNumberInRange((int)lowestSpeed_, (int)maxSpeed_);
+
     }
 }

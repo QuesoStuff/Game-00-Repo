@@ -9,6 +9,7 @@ public static class GENERIC
 {
     private static System.Random random = new System.Random();
     private static float previousRealTime = 0;
+    private delegate float TimeGetter();
 
     // Duration-related functions
 
@@ -240,7 +241,6 @@ public static class GENERIC
         onComplete?.Invoke();
     }
 */
-    private delegate float TimeGetter();
 
     private static IEnumerator FlashColorCoroutine(Color flashColor, float speed, Func<bool> condition, Action<Color> setColor, Func<Color> getColor, Action onComplete, TimeGetter getTime)
     {
@@ -383,8 +383,7 @@ public static class GENERIC
             Set(value);
         }
     */
-
-    public static IEnumerator HoldColorCoroutine(Color holdColor, float holdDuration, Action<Color> setColor, Func<Color> getOriginalColor, Action onComplete = null)
+    public static IEnumerator HoldColorCoroutine(this MonoBehaviour monoBehaviour, Color holdColor, float holdDuration, Action<Color> setColor, Func<Color> getOriginalColor, Action onComplete = null)
     {
         Color originalColor = getOriginalColor();
         setColor(holdColor);
@@ -392,6 +391,8 @@ public static class GENERIC
         setColor(originalColor);
         onComplete?.Invoke();
     }
+
+
     public static Vector3 ChangeScale(Transform transform, Vector2 direction, Vector2 scale)
     {
         Vector3 currentScale = transform.localScale;
@@ -484,7 +485,31 @@ public static class GENERIC
         {
             UpdateRotation_Left_Right(transform, currDirection);
         }
+        else
+        {
+            float angle = Mathf.Atan2(currDirection.y, currDirection.x) * Mathf.Rad2Deg;
+            transform.rotation = Quaternion.Euler(0f, 0f, angle - 90);  // subtract 90 to align with Unity's coordinate system
+        }
     }
+
+    public static IEnumerator KnockBack(MonoBehaviour monoBehaviour, Vector2 direction, float knockBackDistance, float knockBackTime, Rigidbody2D rb2d)
+    {
+        Vector2 originalPosition = rb2d.position;
+        Vector2 knockBackDirection = -direction;
+        Vector2 knockBackPosition = originalPosition + knockBackDirection * knockBackDistance;
+
+        float elapsed = 0f;
+        while (elapsed < knockBackTime)
+        {
+            rb2d.MovePosition(Vector2.Lerp(originalPosition, knockBackPosition, elapsed / knockBackTime));
+            elapsed += Time.deltaTime;
+            yield return null;
+        }
+
+        // Ensure the final position is set accurately
+        rb2d.MovePosition(knockBackPosition);
+    }
+
 
 
 }

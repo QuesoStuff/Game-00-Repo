@@ -22,8 +22,16 @@ public class Bullet_Config : MonoBehaviour
     private static int activeBulletCount_;
 
 
-    private int[] thresholds = new int[] { 2, 5, 10 };
-    private float[] multipliers = new float[] { 5f, 0.5f, 0.25f, 0.2f };
+    private int[] thresholds = new int[] { 1, 3, 7, 11, 15 };
+    private float[] multipliers = new float[] { 5f, 1, 0.5f, 0.25f, 0.2f };
+    private Color[] multipleColor = new Color[]
+    {
+    new Color(0f, 1f, 0f),      // Green
+    new Color(0f, 0.75f, 0.25f), // Light Green
+    new Color(0f, 0.5f, 0.5f),   // Cyan
+    new Color(0f, 0.25f, 0.75f), // Sky Blue
+    new Color(0f, 0f, 1f)       // Blue
+    };
 
     public static bool LimitBullet_Missile(int count)
     {
@@ -187,19 +195,35 @@ public class Bullet_Config : MonoBehaviour
     }
     public float Bullet_Speed()
     {
-        float normalSpeed = bullet_Main_.bullet_Move_.GetCurrSpeed();
+        float speed = bullet_Main_.bullet_Move_.GetFastSpeed();
         for (int i = 0; i < thresholds.Length; i++)
         {
             if (activeBulletCount_ < thresholds[i])
             {
-                normalSpeed = normalSpeed * multipliers[i];
+                speed = speed * multipliers[i];
                 break;
             }
         }
         // Set the new speed
-        bullet_Main_.bullet_Move_.SetCurrentSpeed(normalSpeed);
-        static_shared_Speed = normalSpeed;
-        return normalSpeed;
+        bullet_Main_.bullet_Move_.SetCurrentSpeed(speed);
+        static_shared_Speed = speed;
+        return speed;
+    }
+    public Color BulletColor()
+    {
+        Color BulletColor = Color.clear;
+        for (int i = 0; i < multipleColor.Length; i++)
+        {
+            if (activeBulletCount_ < thresholds[i])
+            {
+                BulletColor = multipleColor[i];
+                bullet_Main_.bullet_Color_.SetCurrentColor(BulletColor);
+                break;
+            }
+        }
+        // Set the new speed
+        bullet_Main_.bullet_Color_.SetColor();
+        return BulletColor;
     }
     public void Stat_Accelarate(Vector2 acc)
     {

@@ -12,6 +12,7 @@ public class Player_Main : MonoBehaviour_Plus
     [SerializeField] public Move player_Move_;
     [SerializeField] public Position player_Position_;
     [SerializeField] public Direction player_Direction_;
+    [SerializeField] public Color_General player_Color_;
 
     public static Player_Main instance_;
 

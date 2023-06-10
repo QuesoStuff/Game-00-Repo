@@ -11,6 +11,8 @@ public class Bullet_Main : MonoBehaviour_Plus
     [SerializeField] public Health bullet_Health_;
     [SerializeField] public Bullet_Config bullet_Config_;
     [SerializeField] public Direction bullet_Direction_;
+    [SerializeField] public Color_General bullet_Color_;
+
     private bool isDestroyed = false;
 
     public static void Static_Create(Vector3 position, Quaternion rotation, Vector3 velocity, GameObject prefab)
@@ -28,16 +30,14 @@ public class Bullet_Main : MonoBehaviour_Plus
     {
         bullet_Move_.Set(velocity);
         bullet_Direction_.SetDirection();
-        if (bullet_Direction_.GetDirection().y != 0)
-            transform.rotation = Quaternion.Euler(0f, 0f, 0);
-        else if (bullet_Direction_.GetDirection().x != 0)
-            transform.rotation = Quaternion.Euler(0f, 0f, 180);
+        bullet_Direction_.StartingRotation();
 
         Kill(4 * CONSTANTS.DEFSULT_BULLET_LIFE);
         bullet_Health_.AddToAction_OnDeath(Kill);
         Bullet_Config.SetBulletCount(Bullet_Config.GetBulletCount() + 1);
         bullet_Collision_.Congfigure_CollisionTables();
         bullet_Config_.Bullet_Speed();
+        bullet_Config_.BulletColor();
         bullet_Controller_.Bullet_Configuration();
     }
 
@@ -56,16 +56,16 @@ public class Bullet_Main : MonoBehaviour_Plus
         {
             bullet_Config_.Bullet_Speed();
         }
+        if (Bullet_Config.GetIsStatUniformSpeed())
+        {
+            bullet_Move_.SetCurrentSpeed(Bullet_Config.Get_StaticSpeed());
+        }
     }
     void FixedUpdate()
     {
         if (bullet_Config_.Get_Bullet_Stat() == CONSTANTS.BULLET_STAT.ACCELARATE)
         {
             bullet_Move_.Moving_Accelarate();
-        }
-        if (Bullet_Config.GetIsStatUniformSpeed())
-        {
-            bullet_Move_.SetCurrentSpeed(Bullet_Config.Get_StaticSpeed());
         }
         bullet_Move_.Moving();
 
@@ -80,6 +80,7 @@ public class Bullet_Main : MonoBehaviour_Plus
             isDestroyed = true;
         }
         bullet_Config_.Bullet_Speed();
+        bullet_Config_.BulletColor();
 
         // recalc the uni speed here once you have the varialbes set 
     }

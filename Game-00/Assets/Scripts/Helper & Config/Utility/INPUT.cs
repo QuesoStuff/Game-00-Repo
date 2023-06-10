@@ -132,7 +132,7 @@ public class INPUT : MonoBehaviour
     }
     public bool Input_Charged_Valid()
     {
-        return GENERIC.IsButtonHeld(KeyCode.Space, ref timer_input_press_charging_, 0.25f);
+        return GENERIC.IsButtonHeld(KeyCode.Space, ref timer_input_press_charging_, CONSTANTS.PLAYER_DEFAULT_CHARGED_TIME * 0.95f);
 
     }
 

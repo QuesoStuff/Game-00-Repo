@@ -1,17 +1,31 @@
+using System;
 using System.Collections;
 using UnityEngine;
 
-public abstract class GameObjectColor : MonoBehaviour
+public class Color_General : MonoBehaviour
 {
     [SerializeField] protected Color currentColor_;
     [SerializeField] protected Color defaultColor_;
-    [SerializeField] protected float blinkingDuration_;
-    [SerializeField] protected float speed_;
+    [SerializeField] protected Color otherColor_;
 
-    // add method that allows object to change color and then return it after some time , kind of like blink
-    // but not blinking . think of hit daamge (Mega-Man)
+    [SerializeField] public SpriteRenderer spriterender;
+    private Coroutine currentCoroutine_ = null;
+    private Color originalColor_; // We store the original color
+    [SerializeField] protected float duration_ = 2;
+    [SerializeField] protected float speed_ = CONSTANTS.HALF_SECOND_BLINK_SPEED;
+    private void Start()
+    {
+        originalColor_ = spriterender.color; // We initialize it with the starting color of the SpriteRenderer
+    }
 
-    public abstract void SetColor();
+    public void SetColor(Color color)
+    {
+        spriterender.color = color;
+    }
+    public void SetColor()
+    {
+        SetColor(currentColor_);
+    }
     public void SetCurrentColor(Color color)
     {
         currentColor_ = color;
@@ -21,7 +35,15 @@ public abstract class GameObjectColor : MonoBehaviour
     {
         return currentColor_;
     }
+    public void SetOtherColor(Color color)
+    {
+        otherColor_ = color;
+    }
 
+    public Color GetOtherColor()
+    {
+        return otherColor_;
+    }
     public void SetDefaultColor(Color color)
     {
         defaultColor_ = color;
@@ -32,14 +54,14 @@ public abstract class GameObjectColor : MonoBehaviour
         return defaultColor_;
     }
 
-    public void SetBlinkingDuration(float duration)
+    public void SetDuration(float duration)
     {
-        blinkingDuration_ = duration;
+        duration_ = duration;
     }
 
-    public float GetBlinkingDuration()
+    public float GetDuration()
     {
-        return blinkingDuration_;
+        return duration_;
     }
 
     public void SetSpeed(float speed)
@@ -52,19 +74,45 @@ public abstract class GameObjectColor : MonoBehaviour
         return speed_;
     }
 
-    public void BlinkColorContinuos()
-    {
-        this.FlashColorIndefinitely(defaultColor_, speed_, () => true, SetCurrentColor, GetCurrentColor);
-    }
-
     public void BlinkColor()
     {
-        this.FlashColorWithDuration(defaultColor_, blinkingDuration_, speed_, SetCurrentColor, GetCurrentColor);
+        BlinkColor(Color.clear, duration_, speed_);
     }
     public void HoldColor()
     {
-        // GENERIC.HoldColorCoroutine(Color holdColor, float holdDuration, Action<Color> setColor, Func<Color> getOriginalColor, Action onComplete = null)
+        HoldColor(Color.white, duration_ / 4);
+    }
+    public void BlinkColorIndefinitely()
+    {
+        BlinkColorIndefinitely(Color.clear, speed_);
     }
 
 
+    public void BlinkColor(Color blinkColor, float duration, float speed)
+    {
+        StopBlinking();
+        currentCoroutine_ = this.FlashColorWithDuration(blinkColor, duration, speed, SetColor, () => spriterender.color, () => SetColor(originalColor_));
+    }
+
+    public void HoldColor(Color holdColor, float holdDuration)
+    {
+        StopBlinking();
+        currentCoroutine_ = StartCoroutine(this.HoldColorCoroutine(holdColor, holdDuration, SetColor, () => spriterender.color, () => SetColor(originalColor_)));
+    }
+
+    public void BlinkColorIndefinitely(Color blinkColor, float speed)
+    {
+        StopBlinking();
+        currentCoroutine_ = this.FlashColorIndefinitely(blinkColor, speed, () => true, SetColor, () => spriterender.color, () => SetColor(originalColor_));
+    }
+
+    public void StopBlinking()
+    {
+        if (currentCoroutine_ != null)
+        {
+            StopCoroutine(currentCoroutine_);
+            currentCoroutine_ = null;
+            SetColor(originalColor_); // Here we set the color back to the original
+        }
+    }
 }

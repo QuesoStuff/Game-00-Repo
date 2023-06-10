@@ -98,6 +98,7 @@ public abstract class Collision : MonoBehaviour
 
     public void Add(Dictionary<string, List<Action>> actionTable, string key, Action method)
     {
+
         if (actionTable.ContainsKey(key))
         {
             actionTable[key].Add(method);

@@ -39,6 +39,15 @@ public class Direction : MonoBehaviour
             GENERIC.UpdateRotation(transform, GetInitDirection(), currDirection_);
         }
     }
+    public void StartingRotation()
+    {
+        if (currDirection_.y != 0)
+            transform.rotation = Quaternion.Euler(0f, 0f, 0);
+        else if (currDirection_.x != 0)
+            transform.rotation = Quaternion.Euler(0f, 0f, 180);
+    }
+
+
 
 
 
