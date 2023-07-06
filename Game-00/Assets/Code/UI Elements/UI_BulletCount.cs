@@ -16,7 +16,7 @@ public class UI_BulletCount : UI
 
     public string PrintBulletCOunt()
     {
-        uint shotCount = records_.GetBulletCount();
+        int shotCount = records_.GetBulletCount();
         return shotCount.ToString();
     }
 }

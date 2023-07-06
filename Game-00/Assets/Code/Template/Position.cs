@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Position : MonoBehaviour, I_Position
+public class Position : MonoBehaviour
 {
 
     private Vector2 currPosition_;
@@ -14,6 +14,7 @@ public class Position : MonoBehaviour, I_Position
     {
         prevPosition_ = currPosition_;
         currPosition_ = target_.position;
+        Debug.Log("Curr Position: " + currPosition_);
     }
 
 

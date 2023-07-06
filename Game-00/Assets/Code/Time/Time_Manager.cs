@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Time_Manager : MonoBehaviour, I_Time_Manager
+public class Time_Manager : MonoBehaviour //I_Time_Manager
 {
     private CONSTANTS.TIME_MODE currentMode_;
     private Time_Mode currTimeSetup_;
@@ -23,7 +23,10 @@ public class Time_Manager : MonoBehaviour, I_Time_Manager
 
         SetTimeMode(currentMode_, duration);
     }
-
+    public float GetRunningTime()
+    {
+        return currTimeSetup_.GetRunningTime();
+    }
     public void ToggleTimeMode()
     {
         ToggleTimeMode(GetDuration());
@@ -33,9 +36,9 @@ public class Time_Manager : MonoBehaviour, I_Time_Manager
         GENERIC.MakeSingleton(ref instance_, this, this.gameObject);
     }
 
-    public float GetTime()
+    public float GetElapsedTime()
     {
-        return currTimeSetup_.GetTime();
+        return currTimeSetup_.GetElapsedTime();
     }
     public float GetDuration()
     {

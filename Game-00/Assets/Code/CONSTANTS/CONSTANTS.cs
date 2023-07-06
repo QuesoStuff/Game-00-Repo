@@ -9,13 +9,16 @@ public static class CONSTANTS
     public const string Enemy_Tag = "Enemy";
     public const string Bullet_Tag = "Bullet";
     public const string Wall_Tag = "Wall";
+
     public const string Item_Tag = "Item";
     public const string Item_Score_Tag = "Item_Score";
     public const string Item_Health_Tag = "Item_Health";
     public const string Item_Special_Tag = "Item_Special";
 
+    public const string Active_Tag = "Active";
 
     public const string Door_Tag = "Door";
+    public const string Door_Exit_Tag = "DoorExit";
 
 
     public const float HP_PLAYER_STARTING = 5;
@@ -28,20 +31,24 @@ public static class CONSTANTS
     public const float PLAYER_DEFAULT_CHARGED_TIME = 0.5f;
 
 
+    public const int MIN_TO_SEC = 60;
+
     public const float TIME_MAX_TIMER = 2000;
     public enum TIME_MODE { TIMER_MODE, CLOCK_MODE }
     public enum GAME_STATE { PAUSE, PLAY }
     public enum CAMERA_FOLLOW_MODE { CAMERA_FIXED_SPEED, CAMERA_TRACKING_TARGET }
-    public enum UI_TEXT_BLINKING_STATE { NO_BLINK, FIXED_BLINK, INF_BLINK }
-    public enum BULLET_TYPE { NORMAL, LAZER, CHARGED_SHOT, MISSLE };
-    public enum BULLET_STAT { NORMAL, ACCELARATE, UNIFORM_SPEED, INCREASE_DAMAGE, INCREASE_HEALTH };
-
-
+    public enum ACTIVE_CONFIG { CHARGED_SHOT, LAZER, MISSLE, ACCELARATE, UNIFORM_SPEED, INCREASE_HEALTH, INCREASE_DAMAGE, DASH, FROZEN }
+    public enum ITEM_TYPE { HP, SCORE, HP_AND_SCORE, CHARGED_SHOT, LAZER, MISSLE, ACCELARATE, UNIFORM_SPEED, INCREASE_HEALTH, INCREASE_DAMAGE, DASH, FROZEN }
+    public enum BORDER_TYPE { RECTANGLE, PENTAGON, CIRCLE, SQUARE, TRIANGLE, TRAPEZOID, ELIPSE, DIAMOND, SEMICIRCLE_LEFT, SEMICIRCLE_RIGHT, SEMICIRCLE_UP, SEMICIRCLE_DOWN, CRESCENTMOON, CROSS, DONUT, HEXAGON, STAR };
+    public enum MAZE_TYPE { SIMPLE, MEDIUM, HARD, RANDOM, PREDEFINED };
 
     public const float TRAVELING_DISTANCE_RATE = 225;
     public const float DEFAULT_SCORE = 1;
+    public const float DEFAULT_SCORE_EXTRA = 4;
 
 
+    public const float DEFAULT_SPAWN_DELAY = 10;
+    public const int DEFAULT_MAX_SPAWNING_COUNT = 100;
 
     public const float CLOCK_TIME_LIMIT = 20 * 60;
     public const float TIMER_START = 5 * 60;
@@ -50,6 +57,8 @@ public static class CONSTANTS
     public const float DEFAULT_DASHING_TIME = 1.75f;
     public const float DEFSULT_BULLET_LIFE = 1.35f;
 
+    public const int SPAWN_MIN_DISTANCE_FROM_PLAYER = -10;
+    public const int SPAWN_MAX_DISTANCE_FROM_PLAYER = 10;
 
 
     public const int EXPLOSION_SIM_SPEED_MIN = 1;

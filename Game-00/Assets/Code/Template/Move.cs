@@ -3,11 +3,9 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Move : MonoBehaviour, I_Move
+public class Move : MonoBehaviour //, I_Move
 {
     [SerializeField] public Rigidbody2D rb2d_;
-    [SerializeField] public Collider2D collision_;
-
     [SerializeField] private float normalSpeed_ = 5f;
     [SerializeField] private float maxSpeed_ = 10f;
     [SerializeField] private float lowestSpeed_ = 2.5f;
@@ -15,7 +13,7 @@ public class Move : MonoBehaviour, I_Move
     [SerializeField] private float diagnolSlowSpeed_ = 1.25f;
     [SerializeField] private float diagnolFastSpeed_ = 5f;
     [SerializeField] private float dashSpeed_ = 25;
-    [SerializeField] private float accelerate_Speed_ = 25;
+    [SerializeField] private float accelerate_Speed_ = 0;
 
     [SerializeField] private float currSpeed_;
     private float x_;
@@ -23,7 +21,7 @@ public class Move : MonoBehaviour, I_Move
     private Vector2 currVelocity_;
     [SerializeField] private float knockbackDuration_ = 1;
     [SerializeField] private float knockbackPower_ = 250;
-
+    private Coroutine currCoroutine_;
 
 
     private float x_Previous_;
@@ -36,15 +34,16 @@ public class Move : MonoBehaviour, I_Move
     {
         return IsMoving_;
     }
+    public void SetCanDash(bool newValue)
+    {
+        CanDash_ = newValue;
+    }
 
     public bool GetCanDash()
     {
         return CanDash_;
     }
-    public void SetCanDash(bool state)
-    {
-        CanDash_ = state;
-    }
+
     public void SetIsMoving(bool state)
     {
         IsMoving_ = state;
@@ -110,6 +109,10 @@ public class Move : MonoBehaviour, I_Move
         float x = x_ * scale;
         float y = y_ * scale;
         Set(x, y);
+    }
+    public void FlipVelocity()
+    {
+        Set(-1);
     }
     public void SetVelocity()
     {
@@ -261,7 +264,12 @@ public class Move : MonoBehaviour, I_Move
         Set(-diagnolFastSpeed_, diagnolFastSpeed_);
     }
 
-
+    public Vector2 Moving(float scale)
+    {
+        Set(scale);
+        SetVelocity();
+        return GENERIC.Move_GameObject(x_, y_, rb2d_);
+    }
     public Vector2 Moving()
     {
         SetVelocity();
@@ -271,48 +279,76 @@ public class Move : MonoBehaviour, I_Move
     {
         return GENERIC.Accelerate_GameObject(x_, y_, rb2d_, accelerate_Speed_);
     }
-
-
-
-
-    public IEnumerator StartDash()
+    public Vector2 StopMoving()
     {
+        SetVelocity();
+        return GENERIC.Move_GameObject(0, 0, rb2d_);
+    }
+
+
+
+
+    public IEnumerator Dash(Action method = null, float DashDuration = CONSTANTS.DEFAULT_DASHING_TIME, float cooldownTime = 5)
+    {
+        StopMoveCoroutine();
         isDashing_ = true;
         CanDash_ = false;
-        yield return StartCoroutine(StartDash(CONSTANTS.DEFAULT_DASHING_TIME));
+        currCoroutine_ = StartCoroutine(StartDashCoroutine(DashDuration));
+        yield return currCoroutine_;
         isDashing_ = false;
-
-        this.SetWithDelay(CanDash_, _ => CanDash_ = true, 5);
-
+        yield return new WaitForSeconds(cooldownTime);
+        CanDash_ = true;
+        method?.Invoke();
+        yield return null;
     }
-    public IEnumerator StartDash(float dashDuration)
+
+
+
+    public IEnumerator StartDashCoroutine(float dashDuration = CONSTANTS.DEFAULT_DASHING_TIME)
     {
         float startTime = Time.time;
         float defaultSpeed = currSpeed_;
         currSpeed_ = dashSpeed_;
-
         while (UnityEngine.Time.time < startTime + dashDuration)
         {
             yield return null;
         }
-
         currSpeed_ = defaultSpeed;
+        yield return null;
     }
 
 
-    public IEnumerator KnockbackCoroutine()
+    public IEnumerator KnockBack(Action method = null)
     {
+        StopMoveCoroutine();
         IsMoving_ = false;
-        yield return StartCoroutine(GENERIC.Knockback(rb2d_, knockbackPower_, knockbackDuration_));
+        currCoroutine_ = StartCoroutine(GENERIC.Knockback(rb2d_, knockbackPower_, knockbackDuration_));
+        yield return currCoroutine_;
         IsMoving_ = true;
+        method?.Invoke();
+        yield return null;
     }
-    public void KnockBack()
-    {
-        StartCoroutine(KnockbackCoroutine());
-    }
+
     public void Set_Random_Speed()
     {
         currSpeed_ = GENERIC.GetRandomNumberInRange((int)lowestSpeed_, (int)maxSpeed_);
 
+    }
+
+    public void StopMoveCoroutine()
+    {
+        GENERIC.StopCurrentCoroutine(this, ref currCoroutine_);
+    }
+
+
+    public void Turn_90_Right()
+    {
+        Vector2 turn = GENERIC.Turn_90(x_, y_);
+        Set(turn);
+    }
+    public void Turn_90_Left()
+    {
+        Vector2 turn = GENERIC.Turn_90(x_, y_, -1);
+        Set(turn);
     }
 }

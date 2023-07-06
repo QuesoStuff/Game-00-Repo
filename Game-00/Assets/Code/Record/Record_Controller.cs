@@ -1,23 +1,24 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Record_Controller : MonoBehaviour, I_Record_Controller
+public class Record_Controller : MonoBehaviour //I_Record_Controller
 {
-    [SerializeField] public Position target_Position_;
     [SerializeField] public Record_Main records_Main_;
     [SerializeField] public Health target_health_;
 
     public void TriggerPulled()
     {
-        uint currBulletCount = records_Main_.GetBulletCount();
+        int currBulletCount = records_Main_.GetBulletCount();
         records_Main_.SetBulletCount(currBulletCount + 1);
     }
 
     public void Traveling()
     {
-        float newRecordDistance = GENERIC.Distance(target_Position_.GetPosition(), target_Position_.GetPositionPrev(), records_Main_.GetDistanceTraveled());
-        records_Main_.SetDistanceTraveled(newRecordDistance);
+        float newRecordDistance = Vector3.Distance(records_Main_.GetCurrPosition(), records_Main_.GetPrevPosition());
+        float totalDistance = records_Main_.GetDistanceTraveled();
+        records_Main_.SetDistanceTraveled(totalDistance + newRecordDistance);
     }
 
     public void TotalDamage()
@@ -51,24 +52,18 @@ public class Record_Controller : MonoBehaviour, I_Record_Controller
 
     public void KillCount()
     {
-        uint currKillCount = records_Main_.GetKillCount();
+        int currKillCount = records_Main_.GetKillCount();
         records_Main_.SetKillCount(currKillCount + 1);
+
     }
 
-    public void Clock()
+    public void Time() // works for clock and timer
     {
         if (Time_Manager.instance_.GetMode() == CONSTANTS.TIME_MODE.CLOCK_MODE)
         {
-            float clock = Time_Manager.instance_.GetTime();
-            records_Main_.SetClockMax(clock);
+            float runningTime = Time_Manager.instance_.GetRunningTime();
+            records_Main_.SetClockMax(runningTime);
         }
     }
-    public void TImer()
-    {
-        if (Time_Manager.instance_.GetMode() == CONSTANTS.TIME_MODE.TIMER_MODE)
-        {
-            float clock = Time_Manager.instance_.GetTime();
-            records_Main_.SetClockMax(clock);
-        }
-    }
+
 }

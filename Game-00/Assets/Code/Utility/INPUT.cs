@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class INPUT : MonoBehaviour, I_Input
+public class INPUT : MonoBehaviour
 {
     //Singleton Instance
     public static INPUT instance_;
@@ -34,6 +34,10 @@ public class INPUT : MonoBehaviour, I_Input
     public bool Input_Move_Down() => Input.GetKey(KeyCode.DownArrow);
     public bool Input_Move_Left() => Input.GetKey(KeyCode.LeftArrow);
     public bool Input_Move_Right() => Input.GetKey(KeyCode.RightArrow);
+    public bool Input_Move_Any()
+    {
+        return (Input_Move_Up() || Input_Move_Down() || Input_Move_Left() || Input_Move_Right());
+    }
 
     //Input methods for stopping movement
     public bool Input_Move_Up_Stop() => Input.GetKeyUp(KeyCode.UpArrow);
@@ -64,7 +68,7 @@ public class INPUT : MonoBehaviour, I_Input
 
     //Methods for shooting charged shot
     public bool Input_Shot_Charged() => GENERIC.Valid_Duration(ref timer_input_press_shoot_charged_, CONSTANTS.PLAYER_DEFAULT_CHARGED_TIME, Input_Trigger_Pulled, Input_Trigger_Release);
-    public bool Input_Charged_Valid() => GENERIC.IsButtonHeld(KeyCode.Space, ref timer_input_press_charging_, CONSTANTS.PLAYER_DEFAULT_CHARGED_TIME * 0.95f);
+    public bool Input_Charged_Valid() => GENERIC.Valid_Duration(ref timer_input_press_charging_, CONSTANTS.PLAYER_DEFAULT_CHARGED_TIME * 0.95f, () => Input.GetKeyDown(KeyCode.Space), () => Input.GetKey(KeyCode.Space));
 
     //Method for double tap validation
     public bool Input_Double_Tap(ref float timer, float duration, Func<bool> conditionPress)

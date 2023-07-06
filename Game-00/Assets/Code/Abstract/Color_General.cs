@@ -2,26 +2,30 @@ using System;
 using System.Collections;
 using UnityEngine;
 
-public class Color_General : MonoBehaviour, I_Color_General
+public class Color_General : MonoBehaviour //, I_Color_General
 {
     [SerializeField] protected Color currentColor_;
     [SerializeField] protected Color defaultColor_;
     [SerializeField] protected Color otherColor_;
-    [SerializeField] protected ColorRange color_Range_;
+    [SerializeField] public ColorRange color_Range_;
 
     [SerializeField] public SpriteRenderer spriterender_;
     private Coroutine currentCoroutine_ = null;
     private Color originalColor_;
     [SerializeField] protected float duration_ = 2;
     [SerializeField] protected float speed_ = CONSTANTS.HALF_SECOND_BLINK_SPEED;
-    private void Start()
-    {
-        originalColor_ = spriterender_.color;
-    }
-    public void SetColorFromRange(uint index)
+
+    public void SetColorFromRange(int index = 0)
     {
         Color colorFromRange = color_Range_.GetColor(index);
         SetColor(colorFromRange);
+    }
+    public Color SetNextColor()
+    {
+        Color nextColor = color_Range_.GetNextColor();
+        SetCurrentColor(nextColor);
+        SetColor(nextColor);
+        return nextColor;
     }
 
     public void SetRandomColorFromRange()
@@ -45,6 +49,11 @@ public class Color_General : MonoBehaviour, I_Color_General
     public void SetCurrentColor(Color color)
     {
         currentColor_ = color;
+    }
+    public void SetCurrentColor_SetColor(Color color)
+    {
+        SetCurrentColor(color);
+        SetColor(color);
     }
 
     public Color GetCurrentColor()
@@ -94,7 +103,7 @@ public class Color_General : MonoBehaviour, I_Color_General
     {
         BlinkColor(Color.clear, duration_, speed_);
     }
-    public void HoldColor()
+    public void WhiteFlash()
     {
         HoldColor(Color.white, duration_ / 4);
     }
@@ -107,30 +116,26 @@ public class Color_General : MonoBehaviour, I_Color_General
     public void BlinkColor(Color blinkColor, float duration, float speed)
     {
         StopBlinking();
-        currentCoroutine_ = this.FlashColorWithDuration(blinkColor, duration, speed, SetColor, () => spriterender_.color, () => SetColor(originalColor_));
+        currentCoroutine_ = this.FlashColorWithDuration(blinkColor, duration, speed, SetColor, () => spriterender_.color, () => SetColor(currentColor_));
     }
 
     public void HoldColor(Color holdColor, float holdDuration)
     {
         StopBlinking();
-        currentCoroutine_ = StartCoroutine(this.HoldColorCoroutine(holdColor, holdDuration, SetColor, () => spriterender_.color, () => SetColor(originalColor_)));
+        currentCoroutine_ = StartCoroutine(this.HoldColorCoroutine(holdColor, holdDuration, SetColor, () => spriterender_.color, () => SetColor(currentColor_)));
     }
 
     public void BlinkColorIndefinitely(Color blinkColor, float speed)
     {
         StopBlinking();
-        currentCoroutine_ = this.FlashColorIndefinitely(blinkColor, speed, () => true, SetColor, () => spriterender_.color, () => SetColor(originalColor_));
+        currentCoroutine_ = this.FlashColorIndefinitely(blinkColor, speed, () => true, SetColor, () => spriterender_.color, () => SetColor(currentColor_));
     }
 
     public void StopBlinking()
     {
-        if (currentCoroutine_ != null)
-        {
-            StopCoroutine(currentCoroutine_);
-            currentCoroutine_ = null;
-            SetColor(originalColor_);
-        }
+        GENERIC.StopCurrentCoroutine(this, ref currentCoroutine_, () => SetColor(originalColor_));
     }
+
     public ColorRange GetColorRange()
     {
         return color_Range_;
@@ -141,12 +146,12 @@ public class Color_General : MonoBehaviour, I_Color_General
         color_Range_ = colorRange;
     }
 
-    public Color GetColorFromRange(uint index)
+    public Color GetColorFromRange(int index)
     {
         return color_Range_.GetColor(index);
     }
 
-    public void SetCurrentColorFromRange(uint index)
+    public void SetCurrentColorFromRange(int index)
     {
         currentColor_ = color_Range_.GetColor(index);
     }

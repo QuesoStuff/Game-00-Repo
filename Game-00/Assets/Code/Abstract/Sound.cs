@@ -2,13 +2,13 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public abstract class Sound : MonoBehaviour, I_Sound
+public abstract class Sound : MonoBehaviour
 {
     [SerializeField] protected AudioSource audioSourcea_;
     [SerializeField] protected AudioClip[] audioClips_;
-    protected uint currIndex_;
+    protected int currIndex_;
 
-    public void PlaySound(uint index)
+    public void PlaySound(int index)
     {
         if (GENERIC.IsValidIndex(audioClips_, index))
         {
@@ -30,7 +30,7 @@ public abstract class Sound : MonoBehaviour, I_Sound
 
     public void PlayRandomSound()
     {
-        uint randomIndex = (uint)GENERIC.GetRandomNumberInRange(0, audioClips_.Length);
+        int randomIndex = (int)GENERIC.GetRandomNumberInRange(0, audioClips_.Length);
         PlaySound(randomIndex);
     }
 }

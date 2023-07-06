@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class GameState : MonoBehaviour, I_GameState
+public class GameState : MonoBehaviour
 {
     public static GameState instance_;
     [SerializeField] private CONSTANTS.GAME_STATE gameState_;
@@ -52,11 +52,13 @@ public class GameState : MonoBehaviour, I_GameState
         if (gameState_ == CONSTANTS.GAME_STATE.PLAY)
         {
             Play();
+
         }
         else if (gameState_ == CONSTANTS.GAME_STATE.PAUSE)
         {
             Pause();
         }
+        ACTIVE.TriggerEvent_DoorFlashing(gameState_ == CONSTANTS.GAME_STATE.PLAY);
     }
 
     public CONSTANTS.GAME_STATE GetGameState()
@@ -87,13 +89,14 @@ public class GameState : MonoBehaviour, I_GameState
     {
         PrevFile.instance_.LoadFile();
     }
-
+    public void Restart()
+    {
+        GENERIC.RestartScene();
+    }
     public void SaveGameOnExit()
     {
         UI_Main.instance_.UI_Pause_Resume_.Update_UI_Text("-- EXIT --");
         Load_Save.SaveData(Record_Main.instance_);
-        Debug.Log("Game saved on exit!");
-
         if (Application.isEditor)
         {
             UnityEditor.EditorApplication.isPlaying = false;

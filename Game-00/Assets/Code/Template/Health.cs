@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Health : MonoBehaviour, I_Health
+public class Health : MonoBehaviour  //, //I_Health
 {
     [SerializeField] private float hpCurr_ = 2;
     [SerializeField] private float hpMax_ = 10;
@@ -44,30 +44,40 @@ public class Health : MonoBehaviour, I_Health
     {
         return hpMax_;
     }
-    public float Damage(float damage = CONSTANTS.HP_DEFAULT_DAMAGE, float boundaryMaxDamage = 0, float boundaryTriggerMethod = CONSTANTS.HP_DEFAULT_MAXLIFE, Action method = null)
+
+    public float Damage(float damage = CONSTANTS.HP_DEFAULT_DAMAGE, float? boundaryMaxDamage = null, float? boundaryTriggerMethod = null, Action method = null)
     {
+        boundaryMaxDamage ??= 0;
+        boundaryTriggerMethod ??= 0;
+        method ??= OnDeath_;
+
         float damageTaken = damage;
-        if (hpCurr_ - damage <= boundaryMaxDamage)
-            damageTaken = hpCurr_ - boundaryMaxDamage;
+        if (hpCurr_ - damage < boundaryMaxDamage.Value)
+            damageTaken = hpCurr_ - boundaryMaxDamage.Value;
+
         hpCurr_ -= damageTaken;
-        if (hpCurr_ <= boundaryTriggerMethod)
-            method?.Invoke();
+        if ((hpCurr_ / hpMax_) <= boundaryTriggerMethod)
+            method.Invoke();
+
         return damageTaken;
     }
 
-    public float Heal(float heal = CONSTANTS.HP_DEFAULT_HEAL, float? BoundaryMaxHeal = null, float boundaryTriggerMethod = 0, Action method = null)
+    public float Heal(float heal = CONSTANTS.HP_DEFAULT_HEAL, float? BoundaryMaxHeal = null, float? boundaryTriggerMethod = null, Action method = null)
     {
-        float actualMaxHeal = BoundaryMaxHeal ?? hpMax_;
+        BoundaryMaxHeal ??= hpMax_;
+        boundaryTriggerMethod ??= 1;
+        method ??= OnMaxHeal_;
 
         float healTaken = heal;
-        if (hpCurr_ + heal >= actualMaxHeal)
-            healTaken = actualMaxHeal - hpCurr_;
+        if (hpCurr_ + heal > BoundaryMaxHeal.Value)
+            healTaken = BoundaryMaxHeal.Value - hpCurr_;
+
         hpCurr_ += healTaken;
-        if (hpCurr_ >= boundaryTriggerMethod)
-            method?.Invoke();
+        if ((hpCurr_ / hpMax_) >= boundaryTriggerMethod)
+            method.Invoke();
+
         return healTaken;
     }
-
 
 
     public float heal_unbounded(float hp = CONSTANTS.HP_DEFAULT_HEAL, float boundaryTriggerMethod = 0, Action method = null)
@@ -81,15 +91,7 @@ public class Health : MonoBehaviour, I_Health
 
         return hp;
     }
-    public void Heal()
-    {
-        float healed = Heal(CONSTANTS.HP_DEFAULT_HEAL, boundaryTriggerMethod: hpMax_, method: OnMaxHeal_);
-    }
 
-    public void Damage()
-    {
-        float damaged = Damage(CONSTANTS.HP_DEFAULT_DAMAGE, boundaryTriggerMethod: 0, method: OnDeath_);
-    }
     public void Set_HP(float hp)
     {
         hpCurr_ = hp;
@@ -97,6 +99,14 @@ public class Health : MonoBehaviour, I_Health
     public void Set_Damage(float damage)
     {
         hpDamage_ = damage;
+    }
+    public float Get_Damage()
+    {
+        return hpDamage_;
+    }
+    public float Get_Heal()
+    {
+        return hpHeal_;
     }
     public void Set_Heal(float heal)
     {
@@ -119,14 +129,15 @@ public class Health : MonoBehaviour, I_Health
         hpMax_ += extraHearts;
         method?.Invoke();
     }
-
-
-    public void Death(Action method)
+    public void Set_Random_Health()
     {
-        method?.Invoke();
+        hpCurr_ = GENERIC.GetRandomNumberInRange((int)0, (int)hpMax_);
+
     }
-    public void Death()
+    public void Death(Action method = null)
     {
-        OnDeath_?.Invoke();
+        method ??= OnDeath_;
+
+        method?.Invoke();
     }
 }

@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public abstract class Time_Mode : I_Time_Mode
+public abstract class Time_Mode //: //I_Time_Mode
 {
     [SerializeField] protected float duration_;
     [SerializeField] protected float elapsedTime_;
@@ -44,7 +44,7 @@ public abstract class Time_Mode : I_Time_Mode
         OnTimeDone_?.Invoke();
     }
 
-    public float GetTime()
+    public float GetElapsedTime()
     {
         return elapsedTime_;
     }
@@ -52,8 +52,17 @@ public abstract class Time_Mode : I_Time_Mode
     {
         return duration_;
     }
-
+    public abstract float GetRunningTime();
     protected abstract void CalculateTime();
+    protected void CalculateTime(Func<float, float> timeCalculation, float limit)
+    {
+        elapsedTime_ = timeCalculation(elapsedTime_);
+        if (Math.Abs(elapsedTime_ - limit) < 0.01)
+        {
+            elapsedTime_ = limit;
+            Stop();
+        }
+    }
     public void Running()
     {
         if (isRunning_)
@@ -62,6 +71,5 @@ public abstract class Time_Mode : I_Time_Mode
         }
 
     }
-
 
 }

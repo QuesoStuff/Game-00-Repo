@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Direction : MonoBehaviour, I_Direction
+public class Direction : MonoBehaviour
 {
 
     [SerializeField] public Move target_Velocity_;
@@ -29,15 +29,15 @@ public class Direction : MonoBehaviour, I_Direction
     {
         return initDirection_;
     }
-    public void Turn()
+    public bool Turn()
     {
         Vector2 absCurrDirection = new Vector2(Mathf.Abs(currDirection_.x), Mathf.Abs(currDirection_.y));
         Vector2 absPrevDirection = new Vector2(Mathf.Abs(prevDirection_.x), Mathf.Abs(prevDirection_.y));
-
         if (absCurrDirection != absPrevDirection)
         {
             GENERIC.UpdateRotation(transform, GetInitDirection(), currDirection_);
         }
+        return currDirection_ != prevDirection_; ;
     }
     public void StartingRotation()
     {
@@ -50,7 +50,10 @@ public class Direction : MonoBehaviour, I_Direction
 
 
 
-
+    public static Vector2 GenerateRandomDirection()
+    {
+        return GENERIC.GetRandomDirection();
+    }
 
 
 }

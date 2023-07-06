@@ -10,14 +10,22 @@ public class Timer : Time_Mode
         this.elapsedTime_ = duration;
     }
 
+
+    /*
+    elapsedTime_ -= Time.deltaTime;
+    if (elapsedTime_ <= 0)
+    {
+        elapsedTime_ = 0;
+        Stop();
+    }
+    */
     protected override void CalculateTime()
     {
-        elapsedTime_ -= Time.deltaTime;
-        if (elapsedTime_ <= 0)
-        {
-            elapsedTime_ = 0;
-            Stop();
-        }
+        CalculateTime(time => time - Time.deltaTime, 0);
+    }
+    public override float GetRunningTime()
+    {
+        return duration_ - elapsedTime_;
     }
 }
 

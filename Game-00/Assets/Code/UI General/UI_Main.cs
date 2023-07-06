@@ -19,6 +19,12 @@ public class UI_Main : MonoBehaviour
     private void Awake()
     {
         GENERIC.MakeSingleton(ref instance_, this, this.gameObject);
+        UI_Time.Init();
+        UI_Health_.Init();
+    }
+    void Start()
+    {
+
     }
 
 

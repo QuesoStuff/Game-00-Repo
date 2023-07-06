@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class PrevFile : MonoBehaviour, I_PrevFile
+public class PrevFile : MonoBehaviour
 {
     public static PrevFile instance_;
     private FileData highestRecord_;

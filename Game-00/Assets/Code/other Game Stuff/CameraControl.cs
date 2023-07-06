@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class CameraControl : MonoBehaviour, I_CameraControl
+public class CameraControl : MonoBehaviour //, I_CameraControl
 {
 
     [SerializeField] private float followSpeed_ = 2f;
@@ -13,22 +13,30 @@ public class CameraControl : MonoBehaviour, I_CameraControl
     [SerializeField] public Move target_Movement_;
     [SerializeField] private float zoom_ = 10;
     private CONSTANTS.CAMERA_FOLLOW_MODE cameraMode_;
-
+    public static CameraControl instance_;
+    private void Awake()
+    {
+        GENERIC.MakeSingleton(ref instance_, this, this.gameObject);
+    }
     public void Start()
     {
+
+        GameObject target_Object_ = GameObject.FindGameObjectWithTag(CONSTANTS.Player_Tag);
+        if (target_Object_ != null)
+        {
+            target_Transform_ = target_Object_.transform;
+            target_Movement_ = target_Object_.GetComponent<Move>();
+        }
         SetZoom();
-
     }
 
-    public void SetZoom(float zoom)
+    public void SetZoom(float? zoom = null)
     {
-        Camera.main.orthographicSize = zoom;
+        zoom ??= zoom_;
+
+        Camera.main.orthographicSize = zoom.Value;
     }
 
-    public void SetZoom()
-    {
-        SetZoom(zoom_);
-    }
 
     public void ConfigureTarget()
     {
@@ -58,7 +66,6 @@ public class CameraControl : MonoBehaviour, I_CameraControl
             }
         }
     }
-
 
     public void CameraFollowFixedSpeed()
     {

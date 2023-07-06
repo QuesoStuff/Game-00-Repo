@@ -15,7 +15,7 @@ public class UI_KillCount : UI
     }
     public string PrintKillCount()
     {
-        uint shotCount = records_.GetKillCount();
+        int shotCount = records_.GetKillCount();
 
         return shotCount.ToString();
     }

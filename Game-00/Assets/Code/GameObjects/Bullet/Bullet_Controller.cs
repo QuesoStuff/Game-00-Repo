@@ -5,7 +5,7 @@ using UnityEngine;
 public class Bullet_Controller : MonoBehaviour
 {
     [SerializeField] public Bullet_Main bullet_Main_;
-    [SerializeField] private Vector2 accelarte_;
+    [SerializeField] private float accelarte_;
     [SerializeField] private float damage_;
     [SerializeField] private float health_;
     [SerializeField] private float sizeScale_;
@@ -15,74 +15,89 @@ public class Bullet_Controller : MonoBehaviour
 
     public void Bullet_Configuration_Stat()
     {
-        if (Bullet_Config.GetIsStatAccelerate())
+        if (ACTIVE.GetIsStatAccelerate())
         {
-            bullet_Main_.bullet_Config_.Stat_Accelarate(accelarte_);
+            bullet_Main_.bullet_Config_.BulletConfigurate_Extra_Accelerate();
         }
-        if (Bullet_Config.GetIsStatIncreasedDamage())
+        if (ACTIVE.GetIsStatIncreasedDamage())
         {
-            bullet_Main_.bullet_Config_.IncreaseDamage(damage_);
+            bullet_Main_.bullet_Config_.BulletConfigurate_Extra_IncreasedDamage();
         }
-        if (Bullet_Config.GetIsStatIncreaseHealth())
+        if (ACTIVE.GetIsStatIncreaseHealth())
         {
-            bullet_Main_.bullet_Config_.IncreaseHealth(health_);
+            bullet_Main_.bullet_Config_.BulletConfigurate_Extra_IncreasedHP();
         }
-        if (Bullet_Config.GetIsStatUniformSpeed())
+        if (ACTIVE.GetIsStatUniformSpeed())
         {
-            bullet_Main_.bullet_Config_.Stat_UniformSpeed(Bullet_Config.Get_StaticSpeed());
+            bullet_Main_.bullet_Config_.BulletConfigurate_Extra_UniformSpeed();
         }
+
     }
     public void Bullet_Configuration_Type(bool IsSoloCharged = false)
     {
-        if (Bullet_Config.GetIsTypeLazer())
+        if (ACTIVE.GetIsTypeCharged() || IsSoloCharged)
         {
+            bullet_Main_.bullet_Config_.BulletConfigurate_ChargedShot();
+            bullet_Main_.bullet_Config_.Config_ChargedShot(transform.localScale * sizeScale_, sizeDuration_);
+            if (!ACTIVE.GetIsTypeLazer())
+                bullet_Main_.ChangeSprite();
+        }
+        if (ACTIVE.GetIsTypeLazer())
+        {
+            bullet_Main_.bullet_Config_.BulletConfigurate_Lazer();
             bullet_Main_.bullet_Config_.Config_Lazer(lazerLength_);
         }
-        if (Bullet_Config.GetIsTypeCharged() || IsSoloCharged)
+        if (ACTIVE.GetIsTypeMissle())
         {
-            bullet_Main_.bullet_Config_.Config_ChargedShot(transform.localScale * sizeScale_, sizeDuration_);
+            //bullet_Main_.bullet_Config_.BulletConfigurate_MIssile();
         }
     }
     public void Bullet_Missle_Controls()
     {
+        bool move = INPUT.instance_.Input_Move_Any();
         if (INPUT.instance_.Input_Tap_Up())
         {
             bullet_Main_.bullet_Move_.Move_Up();
-            bullet_Main_.bullet_Direction_.SetDirection();
-            bullet_Main_.bullet_Direction_.Turn();
-            Spawning_Main.instance_.spawning_SFX_.Spawn_ExplosionDash(transform.position, Color.white);
         }
         else if (INPUT.instance_.Input_Tap_Down())
         {
             bullet_Main_.bullet_Move_.Move_Down();
-            bullet_Main_.bullet_Direction_.SetDirection();
-            bullet_Main_.bullet_Direction_.Turn();
-            Spawning_Main.instance_.spawning_SFX_.Spawn_ExplosionDash(transform.position, Color.white);
         }
         else if (INPUT.instance_.Input_Tap_Left())
         {
             bullet_Main_.bullet_Move_.Move_Left();
-            bullet_Main_.bullet_Direction_.SetDirection();
-            bullet_Main_.bullet_Direction_.Turn();
-            Spawning_Main.instance_.spawning_SFX_.Spawn_ExplosionDash(transform.position, Color.white);
         }
         else if (INPUT.instance_.Input_Tap_Right())
         {
             bullet_Main_.bullet_Move_.Move_Right();
+        }
+        if (move)
+        {
             bullet_Main_.bullet_Direction_.SetDirection();
-            bullet_Main_.bullet_Direction_.Turn();
-            Spawning_Main.instance_.spawning_SFX_.Spawn_ExplosionDash(transform.position, Color.white);
+            bool newDireciont = bullet_Main_.bullet_Direction_.Turn();
+            Vector3 offset = bullet_Main_.Offset(-bullet_Main_.bullet_Direction_.GetDirection());
+            if (newDireciont)
+                Spawning_Main.instance_.spawning_SFX_.Spawn_ExplosionHurt(transform.position + offset);
         }
     }
 
     public void Bullet_Configuration(bool IsSoloCharged = false)
     {
+        bullet_Main_.bullet_Config_.BulletConfigurate_General();
         Bullet_Configuration_Type(IsSoloCharged);
         Bullet_Configuration_Stat();
+        bullet_Normal_Bullet(IsSoloCharged);
     }
 
 
-
+    public void bullet_Normal_Bullet(bool IsSoloCharged = false)
+    {
+        if (ACTIVE.GetIsEmpty() || IsSoloCharged)
+        {
+            if (GENERIC.CoinToss(20, 80))
+                bullet_Main_.bullet_Health_.Set_Damage(2);
+        }
+    }
 
 }
 

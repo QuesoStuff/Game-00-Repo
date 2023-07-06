@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-public abstract class UI : MonoBehaviour, I_UI
+public abstract class UI : MonoBehaviour
 {
     [SerializeField] internal Text textBox;
 
@@ -15,6 +15,7 @@ public abstract class UI : MonoBehaviour, I_UI
     protected Color colorNew_ = Color.yellow;
     protected Color originalColor_;
     protected bool indefBlink_;
+    public CollectionRange<float, Color> colorRange_;
 
     private bool isBlinking_ = false;
 
@@ -27,7 +28,10 @@ public abstract class UI : MonoBehaviour, I_UI
         return isBlinking_;
     }
 
+    public virtual void Init()
+    {
 
+    }
     public float GetDuration()
     {
         return duration_;
@@ -96,17 +100,13 @@ public abstract class UI : MonoBehaviour, I_UI
     }
 
 
-
     public void StopBlinking()
     {
-        if (currentBlinkCoroutine_ != null)
+        GENERIC.StopCurrentCoroutine(this, ref currentBlinkCoroutine_, () =>
         {
-            StopCoroutine(currentBlinkCoroutine_);
-            currentBlinkCoroutine_ = null;
             textBox.color = originalColor_;
-        }
-        SetIsBlinking(currentBlinkCoroutine_ == null);
-        isBlinking_ = false;
+            isBlinking_ = false;
+        });
     }
 
 
@@ -146,5 +146,43 @@ public abstract class UI : MonoBehaviour, I_UI
     public virtual void Update_UI()
     {
 
+    }
+
+    // to be consolidated later 
+    protected IEnumerator FadeOverTime(float duration)
+    {
+        Color originalColor = textBox.color;
+        for (float t = 0.01f; t < duration; t += Time.deltaTime)
+        {
+            Color color = textBox.color;
+            color.a = Mathf.Lerp(originalColor.a, 0, t / duration);
+            textBox.color = color;
+            yield return null;
+        }
+    }
+
+    protected IEnumerator ScaleOverTime(GameObject obj, Vector3 startSize, float endSize, float duration)
+    {
+        float timer = 0;
+        while (timer < duration)
+        {
+            float progress = timer / duration;
+            obj.transform.localScale = Vector3.Lerp(startSize, new Vector3(endSize, endSize, endSize), progress);
+            timer += Time.deltaTime;
+            yield return null;
+        }
+
+        obj.transform.localScale = new Vector3(endSize, endSize, endSize);
+    }
+
+    protected IEnumerator MoveUpOverTime(GameObject obj, float speed, float duration)
+    {
+        float timer = 0;
+        while (timer < duration)
+        {
+            obj.transform.position += new Vector3(0, speed * Time.deltaTime, 0);
+            timer += Time.deltaTime;
+            yield return null;
+        }
     }
 }
