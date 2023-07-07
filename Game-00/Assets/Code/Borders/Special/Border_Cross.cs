@@ -34,5 +34,9 @@ public class Border_Cross : Border
 
     }
 
+    public override bool IsWithinBounds(Vector3 position)
+    {
+        return GENERIC.IsWithinBounds_Cross(position, center_, armLength_);
+    }
 
 }

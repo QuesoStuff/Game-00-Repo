@@ -41,5 +41,9 @@ public abstract class Border_Triangle : Border
     }
 
 
+    public override bool IsWithinBounds(Vector3 position)
+    {
+        return GENERIC.IsWithinBounds_Triangle(position, center_, sideLength_);
+    }
 
 }

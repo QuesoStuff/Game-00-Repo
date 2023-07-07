@@ -11,54 +11,100 @@ public class Debug_Test_01 : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.Q))
         {
             UI_Main.instance_.UI_Debug_.Update_UI_Text("--Rectangle Build Border: ");
-            Border_Main.instance_.SetMaze_Easy();
+            Border_Main.instance_.SetRectangle();
         }
         if (Input.GetKeyDown(KeyCode.W))
         {
-            UI_Main.instance_.UI_Debug_.Update_UI_Text("--Square  Build Border: ");
-            Border_Main.instance_.SetMaze_Medium();
+            UI_Main.instance_.UI_Debug_.Update_UI_Text("--Square Build Border: ");
+            Border_Main.instance_.SetSquare();
         }
         if (Input.GetKeyDown(KeyCode.E))
         {
-            UI_Main.instance_.UI_Debug_.Update_UI_Text("--Circle Build Border: ");
-            Border_Main.instance_.SetMaze_Hard();
+            UI_Main.instance_.UI_Debug_.Update_UI_Text("--Trapezoid Build Border: ");
+            Border_Main.instance_.SetTrapezoid();
         }
         if (Input.GetKeyDown(KeyCode.R))
         {
-            UI_Main.instance_.UI_Debug_.Update_UI_Text("--Elipse Build Border: ");
-            Border_Main.instance_.SetPill();
+            UI_Main.instance_.UI_Debug_.Update_UI_Text("--Diamond Build Border: ");
+            Border_Main.instance_.SetDiamond();
         }
         if (Input.GetKeyDown(KeyCode.T))
         {
-            UI_Main.instance_.UI_Debug_.Update_UI_Text("--Diamond Build Border: ");
-            Border_Main.instance_.SetTrapezoid();
+            UI_Main.instance_.UI_Debug_.Update_UI_Text("--Crescent Moon Build Border: ");
+            Border_Main.instance_.SetCrescentMoon();
         }
         if (Input.GetKeyDown(KeyCode.Y))
         {
-            UI_Main.instance_.UI_Debug_.Update_UI_Text("--Trap Build Border: ");
-            Border_Main.instance_.SetRectangle();
+            UI_Main.instance_.UI_Debug_.Update_UI_Text("--Ellipse Build Border: ");
+            Border_Main.instance_.SetEllipse();
         }
         if (Input.GetKeyDown(KeyCode.U))
         {
-            UI_Main.instance_.UI_Debug_.Update_UI_Text("--Triangle Build Border: ");
-            Border_Main.instance_.SetSquare();
+            UI_Main.instance_.UI_Debug_.Update_UI_Text("--Circle Build Border: ");
+            Border_Main.instance_.SetCircle();
         }
         if (Input.GetKeyDown(KeyCode.I))
         {
-            UI_Main.instance_.UI_Debug_.Update_UI_Text("-Pentagon- Build Border: ");
-            Border_Main.instance_.SetSemiCircleRight();
+            UI_Main.instance_.UI_Debug_.Update_UI_Text("--Cross Build Border: ");
+            Border_Main.instance_.SetCross();
         }
         if (Input.GetKeyDown(KeyCode.O))
         {
-            UI_Main.instance_.UI_Debug_.Update_UI_Text("-Pentagon- Build Border: ");
-            Border_Main.instance_.SetMaze_Easy();
+            UI_Main.instance_.UI_Debug_.Update_UI_Text("--Cross Build Border: ");
+            Border_Main.instance_.SetCross();
         }
         if (Input.GetKeyDown(KeyCode.P))
         {
-            UI_Main.instance_.UI_Debug_.Update_UI_Text("-Pentagon- Build Border: ");
-            Border_Main.instance_.SetMaze_Easy();
+            UI_Main.instance_.UI_Debug_.Update_UI_Text("--Hexagon Build Border: ");
+            Border_Main.instance_.SetHexagon();
+        }
+        if (Input.GetKeyDown(KeyCode.A))
+        {
+            UI_Main.instance_.UI_Debug_.Update_UI_Text("--Pentagon Build Border: ");
+            Border_Main.instance_.SetPentagon();
+        }
+        if (Input.GetKeyDown(KeyCode.S))
+        {
+            UI_Main.instance_.UI_Debug_.Update_UI_Text("--Semi-Circle Down Build Border: ");
+            Border_Main.instance_.SetSemiCircleDown();
+        }
+        if (Input.GetKeyDown(KeyCode.D))
+        {
+            UI_Main.instance_.UI_Debug_.Update_UI_Text("--Pentagon Build Border: ");
+            Border_Main.instance_.SetPentagon();
+        }
+        if (Input.GetKeyDown(KeyCode.F))
+        {
+            UI_Main.instance_.UI_Debug_.Update_UI_Text("--Semi-Circle Up Build Border: ");
+            Border_Main.instance_.SetSemiCircleUp();
+        }
+        if (Input.GetKeyDown(KeyCode.G))
+        {
+            UI_Main.instance_.UI_Debug_.Update_UI_Text("--Semi-Circle Down Build Border: ");
+            Border_Main.instance_.SetSemiCircleDown();
+        }
+        if (Input.GetKeyDown(KeyCode.H))
+        {
+            UI_Main.instance_.UI_Debug_.Update_UI_Text("--Semi-Circle Left Build Border: ");
+            Border_Main.instance_.SetSemiCircleLeft();
+        }
+        if (Input.GetKeyDown(KeyCode.J))
+        {
+            UI_Main.instance_.UI_Debug_.Update_UI_Text("--Semi-Circle Right Build Border: ");
+            Border_Main.instance_.SetSemiCircleRight();
+        }
+        if (Input.GetKeyDown(KeyCode.K))
+        {
+            UI_Main.instance_.UI_Debug_.Update_UI_Text("--Triangle Left Build Border: ");
+            Border_Main.instance_.SetTriangleLeft();
+        }
+        if (Input.GetKeyDown(KeyCode.L))
+        {
+            UI_Main.instance_.UI_Debug_.Update_UI_Text("--Triangle Right Build Border: ");
+            Border_Main.instance_.SetTriangleRight();
         }
     }
+
     void Awake()
     {
     }
@@ -73,29 +119,32 @@ public class Debug_Test_01 : MonoBehaviour
         Spawning_Level_Main.instance_.SetMaxTime();
         Time_Manager.instance_.SetTimeMode(CONSTANTS.TIME_MODE.TIMER_MODE, Spawning_Level_Main.instance_.GetMaxTime());
         Spawning_Level_Main.instance_.StartSpawners();
+        UI_Main.instance_.UI_CountDownStart_.Init();
+        INPUT.instance_.DisableInputForDuration();
+
     }
     void Shoot_type()
     {
         if (Input.GetKeyDown(KeyCode.Alpha5))
         {
-            ACTIVE.SetIsTypeCharged(false);
-            ACTIVE.SetIsTypeLazer(false);
-            ACTIVE.SetIsTypeMissle(false);
+            ActiveItems.SetIsTypeCharged(false);
+            ActiveItems.SetIsTypeLazer(false);
+            ActiveItems.SetIsTypeMissle(false);
             UI_Main.instance_.UI_Debug_.Update_UI_Text("-- All bullet types reset --");
         }
         if (Input.GetKeyDown(KeyCode.Alpha7))
         {
-            ACTIVE.SetIsTypeCharged(true);
+            ActiveItems.SetIsTypeCharged(true);
             UI_Main.instance_.UI_Debug_.Update_UI_Text("-- Charged --");
         }
         if (Input.GetKeyDown(KeyCode.Alpha8))
         {
-            ACTIVE.SetIsTypeLazer(true);
+            ActiveItems.SetIsTypeLazer(true);
             UI_Main.instance_.UI_Debug_.Update_UI_Text("-- Lazer --");
         }
         if (Input.GetKeyDown(KeyCode.Alpha9))
         {
-            ACTIVE.SetIsTypeMissle(true);
+            ActiveItems.SetIsTypeMissle(true);
             UI_Main.instance_.UI_Debug_.Update_UI_Text("-- Missile --");
         }
     }
@@ -105,30 +154,30 @@ public class Debug_Test_01 : MonoBehaviour
 
         if (Input.GetKeyDown(KeyCode.Alpha0))
         {
-            ACTIVE.SetIsStatAccelerate(false);
-            ACTIVE.SetIsStatUniformSpeed(false);
-            ACTIVE.SetIsStatIncreaseHealth(false);
-            ACTIVE.SetIsStatIncreasedDamage(false);
+            ActiveItems.SetIsStatAccelerate(false);
+            ActiveItems.SetIsStatUniformSpeed(false);
+            ActiveItems.SetIsStatIncreaseHealth(false);
+            ActiveItems.SetIsStatIncreasedDamage(false);
             UI_Main.instance_.UI_Debug_.Update_UI_Text("-- All bullet stats reset --");
         }
         if (Input.GetKeyDown(KeyCode.Alpha1))
         {
-            ACTIVE.SetIsStatAccelerate(true);
+            ActiveItems.SetIsStatAccelerate(true);
             UI_Main.instance_.UI_Debug_.Update_UI_Text("-- Accelerate --");
         }
         if (Input.GetKeyDown(KeyCode.Alpha2))
         {
-            ACTIVE.SetIsStatUniformSpeed(true);
+            ActiveItems.SetIsStatUniformSpeed(true);
             UI_Main.instance_.UI_Debug_.Update_UI_Text("-- Uniform Speed --");
         }
         if (Input.GetKeyDown(KeyCode.Alpha3))
         {
-            ACTIVE.SetIsStatIncreaseHealth(true);
+            ActiveItems.SetIsStatIncreaseHealth(true);
             UI_Main.instance_.UI_Debug_.Update_UI_Text("-- Increase Health --");
         }
         if (Input.GetKeyDown(KeyCode.Alpha4))
         {
-            ACTIVE.SetIsStatIncreasedDamage(true);
+            ActiveItems.SetIsStatIncreasedDamage(true);
             UI_Main.instance_.UI_Debug_.Update_UI_Text("-- Increased Damage --");
         }
     }
@@ -211,13 +260,13 @@ public class Debug_Test_01 : MonoBehaviour
     void Update()
     {
 
-        TimeStuff();
-        Delete_SaveFile();
-        Blinking();
-        UI_Tester();
-        ClearDebug();
-        Shoot_Stat();
-        Shoot_type();
+        //TimeStuff();
+        //Delete_SaveFile();
+        //Blinking();
+        //UI_Tester();
+        //ClearDebug();
+        //Shoot_Stat();
+        //Shoot_type();
         if (Input.GetKeyDown(KeyCode.M))
         {
             bool inBound = Border_Main.instance_.IsInBounds(Player_Main.instance_.transform.position);
@@ -225,7 +274,6 @@ public class Debug_Test_01 : MonoBehaviour
         }
 
 
-
-        // BorderBuilds();
+        BorderBuilds();
     }
 }

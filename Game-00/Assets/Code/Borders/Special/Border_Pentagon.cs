@@ -35,5 +35,9 @@ public class Border_Pentagon : Border
 
 
     }
+    public override bool IsWithinBounds(Vector3 position)
+    {
+        return GENERIC.IsWithinBounds_Pentagon(position, center_, sideLength_);
+    }
 
 }

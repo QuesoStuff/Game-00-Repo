@@ -16,6 +16,8 @@ public class GameState : MonoBehaviour
     private void Start()
     {
         SetGameMode(CONSTANTS.GAME_STATE.PLAY);
+        UI_Main.instance_.UI_Pause_Resume_.Init();
+
         LoadGame();
     }
 
@@ -58,7 +60,7 @@ public class GameState : MonoBehaviour
         {
             Pause();
         }
-        ACTIVE.TriggerEvent_DoorFlashing(gameState_ == CONSTANTS.GAME_STATE.PLAY);
+        TriggerEvents.TriggerEvent_DoorFlashing(gameState_ == CONSTANTS.GAME_STATE.PLAY);
     }
 
     public CONSTANTS.GAME_STATE GetGameState()

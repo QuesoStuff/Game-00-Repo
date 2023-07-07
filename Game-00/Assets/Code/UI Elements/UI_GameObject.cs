@@ -29,10 +29,11 @@ public class UI_GameObject : UI
     {
         List<float> thresholds = new List<float> { 3, 7 };
         List<Color> colorsDamage = new List<Color> { Color.red, Color.yellow, Color.white };
-        List<Color> colorsHealth = new List<Color> { Color.white, Color.green, Color.blue };
+        List<Color> colorsHealth = new List<Color> { Color.blue, Color.green, Color.white };
         colorRange_Damage_ = new CollectionRange<float, Color>(thresholds, colorsDamage);
         colorRange_Health_ = new CollectionRange<float, Color>(thresholds, colorsHealth);
     }
+
     private void Awake()
     {
         rectTransform_ = this.GetComponent<RectTransform>();
@@ -46,7 +47,7 @@ public class UI_GameObject : UI
 
         initialPosition_ = transform.position;
         initialScale_ = transform.localScale;
-        initialColor_ = textBox.color;
+        initialColor_ = textBox_.color;
         Init();
 
     }
@@ -89,7 +90,12 @@ public class UI_GameObject : UI
 
     public IEnumerator ShowHPChange(float hpChange = 1, bool isHeal = false)
     {
-        this.gameObject.SetActive(true);
+        // If the gameObject is not already ActiveItems, activate it
+        if (!this.gameObject.activeSelf)
+        {
+            this.gameObject.SetActive(true);
+        }
+
         // If there is a current coroutine running, stop it
         if (currentShowNotificationCoroutine_ != null)
         {
@@ -107,20 +113,22 @@ public class UI_GameObject : UI
             message = $"Damage: -{Mathf.Abs(hpChange)}";
             colorRange_ = colorRange_Damage_;
         }
-        // Store the reference to the new coroutine
+
+        // Color the text
         ColorText(hpChange);
 
-        // Here you could add a delay before showing the notification, if desired.
-        // For example, you could make the method wait for 0.5 seconds:
+        // Wait for some time
         yield return new WaitForSeconds(0.5f);
 
+        // Start the ShowNotification Coroutine and store its reference
         currentShowNotificationCoroutine_ = StartCoroutine(ShowNotification(message));
     }
+
     public void ColorText(float hpChange = 1)
     {
         if (colorRange_ != null)
         {
-            textBox.color = colorRange_.GetResultBasedOnThreshold(hpChange);
+            textBox_.color = colorRange_.GetResultBasedOnThreshold(hpChange);
         }
         else
         {
@@ -133,8 +141,8 @@ public class UI_GameObject : UI
         // Reset everything back to original
         transform.localScale = initialScale_;
         transform.position = initialPosition_;
-        textBox.color = initialColor_;
-        textBox.text = "";
+        textBox_.color = initialColor_;
+        textBox_.text = "";
         transform.rotation = initialRotation_; // reset the rotation
 
         // Reset the temporary offset
@@ -147,6 +155,5 @@ public class UI_GameObject : UI
 
     public override void Update_UI()
     {
-        ShowHPChange();
     }
 }

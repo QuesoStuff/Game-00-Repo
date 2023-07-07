@@ -51,6 +51,9 @@ public class Border_Trapezoid : Border
         vertices_ = GENERIC.AssignPoints_Trapezoid(base1_, base2_, height_, center_);
     }
 
-
+    public override bool IsWithinBounds(Vector3 position)
+    {
+        return GENERIC.IsWithinBounds_Trapezoid(position, center_, base1_, base2_, height_);
+    }
 
 }

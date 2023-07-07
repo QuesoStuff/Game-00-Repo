@@ -15,7 +15,7 @@ public static class CONSTANTS
     public const string Item_Health_Tag = "Item_Health";
     public const string Item_Special_Tag = "Item_Special";
 
-    public const string Active_Tag = "Active";
+    public const string ActiveItems_Tag = "ActiveItems";
 
     public const string Door_Tag = "Door";
     public const string Door_Exit_Tag = "DoorExit";
@@ -37,11 +37,12 @@ public static class CONSTANTS
     public enum TIME_MODE { TIMER_MODE, CLOCK_MODE }
     public enum GAME_STATE { PAUSE, PLAY }
     public enum CAMERA_FOLLOW_MODE { CAMERA_FIXED_SPEED, CAMERA_TRACKING_TARGET }
-    public enum ACTIVE_CONFIG { CHARGED_SHOT, LAZER, MISSLE, ACCELARATE, UNIFORM_SPEED, INCREASE_HEALTH, INCREASE_DAMAGE, DASH, FROZEN }
+    public enum ActiveItems_CONFIG { CHARGED_SHOT, LAZER, MISSLE, ACCELARATE, UNIFORM_SPEED, INCREASE_HEALTH, INCREASE_DAMAGE, DASH, FROZEN }
     public enum ITEM_TYPE { HP, SCORE, HP_AND_SCORE, CHARGED_SHOT, LAZER, MISSLE, ACCELARATE, UNIFORM_SPEED, INCREASE_HEALTH, INCREASE_DAMAGE, DASH, FROZEN }
     public enum BORDER_TYPE { RECTANGLE, PENTAGON, CIRCLE, SQUARE, TRIANGLE, TRAPEZOID, ELIPSE, DIAMOND, SEMICIRCLE_LEFT, SEMICIRCLE_RIGHT, SEMICIRCLE_UP, SEMICIRCLE_DOWN, CRESCENTMOON, CROSS, DONUT, HEXAGON, STAR };
     public enum MAZE_TYPE { SIMPLE, MEDIUM, HARD, RANDOM, PREDEFINED };
-
+    public enum MUISC_MODE { QUEUE, RANDOM, REPEAT };
+    public enum EXPLOSION_TYPES { DEATH, DEATH_ITEM, HURT, DASH, BULLET_WALL_COLLISION };
     public const float TRAVELING_DISTANCE_RATE = 225;
     public const float DEFAULT_SCORE = 1;
     public const float DEFAULT_SCORE_EXTRA = 4;
@@ -57,8 +58,8 @@ public static class CONSTANTS
     public const float DEFAULT_DASHING_TIME = 1.75f;
     public const float DEFSULT_BULLET_LIFE = 1.35f;
 
-    public const int SPAWN_MIN_DISTANCE_FROM_PLAYER = -10;
-    public const int SPAWN_MAX_DISTANCE_FROM_PLAYER = 10;
+    public const int SPAWN_MIN_DISTANCE_FROM_PLAYER = -50;
+    public const int SPAWN_MAX_DISTANCE_FROM_PLAYER = 50;
 
 
     public const int EXPLOSION_SIM_SPEED_MIN = 1;
@@ -81,4 +82,7 @@ public static class CONSTANTS
     public const float BULLET_END_LIFE_MAX = 1.5f;
     public const float BULLET_DURATION_MIN = 0.05f;
     public const float BULLET_DURATION_MAX = 0.25f;
+
+    public const int LOOP_LIMIT = 1000;
+
 }

@@ -33,19 +33,17 @@ public class Border_Rectangle : Border
 
     protected override void AssignPoints()
     {
-        Debug.Log($"Width: {width_}, Height: {height_}, Center: {center_}");
         vertices_ = GENERIC.AssignPoints_Rectangle(width_, height_, center_);
-        foreach (Vector3 vertex in vertices_)
-        {
-            Debug.Log($"Vertex: {vertex}");
-        }
 
         // Draw the debug lines for 5 seconds
         GENERIC.DrawDebugLines(vertices_, Color.red, 5f);
     }
 
 
-
+    public override bool IsWithinBounds(Vector3 position)
+    {
+        return GENERIC.IsWithinBounds_Rectangle(position, center_, width_, height_);
+    }
 
 
 }

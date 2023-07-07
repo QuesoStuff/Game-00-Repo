@@ -53,5 +53,8 @@ public class Border_Hexagon : Border
         vertices_[6] = vertices_[0]; // Close the loop
     }
 
-
+    public override bool IsWithinBounds(Vector3 position)
+    {
+        return GENERIC.IsWithinBounds_Hexagon(position, center_, sideLength_);
+    }
 }

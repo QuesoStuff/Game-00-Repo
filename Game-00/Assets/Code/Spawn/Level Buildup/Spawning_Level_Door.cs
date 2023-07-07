@@ -40,7 +40,23 @@ public class Spawning_Level_Door : Spawning_Level
         return prefabs_[randomIndex];
     }
 
+    public override IEnumerator GameObject_Config()
+    {
+        Main[] mainsInChildren = currPrefab_.GetComponentsInChildren<Main>();
+        foreach (var main in mainsInChildren)
+        {
+            main.Revive();
+            yield return new WaitUntil(() => main.gameObject.activeInHierarchy);
+            main.RepeatStart();
+        }
 
+        if (mainsInChildren.Length == 0 && currPrefab_.tag != CONSTANTS.Wall_Tag)
+        {
+            Debug.LogError("NO MAIN");
+        }
+
+        yield return null;
+    }
 
 
 }

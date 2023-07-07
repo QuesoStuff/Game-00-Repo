@@ -20,7 +20,7 @@ public class UI_Health : UI
     {
         GetHealth();
         Update_UI_Health_Text();
-        GENERIC.ColorText(textBox, "", currHP_.ToString(), "/" + maxHP_.ToString(), colorCode_);
+        GENERIC.ColorText(textBox_, "", currHP_.ToString(), "/" + maxHP_.ToString(), colorCode_);
     }
     public void GetHealth()
     {

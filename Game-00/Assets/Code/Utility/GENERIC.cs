@@ -872,6 +872,283 @@ public static class GENERIC
             Debug.DrawLine(vertices[i], vertices[i + 1], color, duration);
         }
     }
+    public static bool IsWithinBounds_Diamond(Vector3 position, Vector3 center, float width, float height)
+    {
+        float normalizedX = Math.Abs(position.x - center.x) / width;
+        float normalizedY = Math.Abs(position.y - center.y) / height;
+
+        return normalizedX + normalizedY <= 1;
+    }
+
+    public static bool IsWithinBounds_Rectangle(Vector3 position, Vector3 center, float width, float height)
+    {
+        Vector2 point = new Vector2(position.x, position.y);
+        Vector2 topLeft = new Vector2(center.x - width / 2, center.y + height / 2);
+        Vector2 bottomRight = new Vector2(center.x + width / 2, center.y - height / 2);
+
+        return (point.x >= topLeft.x && point.x <= bottomRight.x &&
+                point.y >= bottomRight.y && point.y <= topLeft.y);
+    }
+
+    public static bool IsWithinBounds_Trapezoid(Vector3 position, Vector3 center, float base1, float base2, float height)
+    {
+        Vector2 point = new Vector2(position.x, position.y);
+        float topLeftY = center.y + height / 2;
+        float bottomRightY = center.y - height / 2;
+
+        if (point.y < bottomRightY || point.y > topLeftY) return false; // Outside in Y
+
+        float widthAtY = Mathf.Lerp(base1, base2, (point.y - bottomRightY) / height);
+        float leftX = center.x - widthAtY / 2;
+        float rightX = center.x + widthAtY / 2;
+
+        return point.x >= leftX && point.x <= rightX; // Check X
+    }
+
+    public static bool IsWithinBounds_Donut(Vector3 point, Vector3 center, float innerRadius, float outerRadius)
+    {
+        // First calculate the distance from the point to the center of the donut
+        float distanceToCenter = Vector3.Distance(center, point);
+
+        // If the distance is less than the inner radius, the point is in the hole of the donut
+        if (distanceToCenter < innerRadius)
+        {
+            return false;
+        }
+
+        // If the distance is greater than the outer radius, the point is outside the donut
+        if (distanceToCenter > outerRadius)
+        {
+            return false;
+        }
+
+        // If we get here, the point is in the donut
+        return true;
+    }
+    public static bool IsWithinBounds_SemiCircle(Vector3 position, Vector3 center, float radius)
+    {
+        // Convert the position to 2D
+        Vector2 point = new Vector2(position.x, position.y);
+
+        // Calculate the distance between the point and the center of the semi-circle
+        float distance = Vector2.Distance(new Vector2(center.x, center.y), point);
+
+        // Check if the point is within the semi-circle
+        // It should be less than or equal to the radius and the y-coordinate should be greater or equal to the center's y-coordinate
+        return distance <= radius && point.y >= center.y;
+    }
+
+    public static bool IsWithinBounds_Pill(Vector3 position, Vector3 center, float length, float radius)
+    {
+        Vector2 point = new Vector2(position.x, position.y);
+
+        Vector2 leftCenter = new Vector2(center.x - length / 2, center.y);
+        Vector2 rightCenter = new Vector2(center.x + length / 2, center.y);
+
+        // Check if the point is inside the circles
+        if ((point - leftCenter).sqrMagnitude <= radius * radius || (point - rightCenter).sqrMagnitude <= radius * radius)
+        {
+            return true;
+        }
+
+        // Check if the point is inside the rectangle
+        if (Math.Abs(position.x - center.x) <= length / 2 && Math.Abs(position.y - center.y) <= radius)
+        {
+            return true;
+        }
+
+        return false;
+    }
+
+    public static bool IsWithinBounds_Triangle(Vector3 position, Vector3 center, float sideLength)
+    {
+        // Convert the position to 2D
+        Vector2 point = new Vector2(position.x, position.y);
+
+        // Calculate half of the side length
+        float halfSide = sideLength / 2.0f;
+
+        // Define the vertices of the triangle
+        Vector2 vertexA = new Vector2(center.x - halfSide, center.y);
+        Vector2 vertexB = new Vector2(center.x + halfSide, center.y);
+        Vector2 vertexC = new Vector2(center.x, center.y + (Mathf.Sqrt(3) * halfSide));
+
+        // Calculate the area of the triangle
+        float area = sideLength * (Mathf.Sqrt(3) * sideLength) / 4;
+
+        // Calculate the areas of the three triangles formed by the point and the vertices of the triangle
+        float area1 = Mathf.Abs((vertexA.x * (point.y - vertexC.y) + point.x * (vertexC.y - vertexA.y) + vertexC.y * (vertexA.y - point.y)) / 2.0f);
+        float area2 = Mathf.Abs((vertexB.x * (point.y - vertexC.y) + point.x * (vertexC.y - vertexB.y) + vertexC.y * (vertexB.y - point.y)) / 2.0f);
+        float area3 = Mathf.Abs((vertexA.x * (vertexB.y - point.y) + vertexB.x * (point.y - vertexA.y) + point.x * (vertexA.y - vertexB.y)) / 2.0f);
+
+        // Check if the sum of the three areas is equal to the area of the triangle
+        return Mathf.Abs(area - (area1 + area2 + area3)) < Mathf.Epsilon;
+    }
+
+    public static bool IsWithinBounds_Star(Vector3 position, Vector3 center, float outerRadius, float innerRadius)
+    {
+        Vector2 point = new Vector2(position.x, position.y);
+        Vector2 center2D = new Vector2(center.x, center.y);
+
+        float distanceFromCenter = Vector2.Distance(center2D, point);
+        float angleFromCenter = Mathf.Atan2(point.y - center2D.y, point.x - center2D.x);
+
+        // The star has 10 points. The points at even multiples of pi/5 are at the outer radius,
+        // and the points at odd multiples of pi/5 are at the inner radius.
+        float radiusAtAngle = ((int)(angleFromCenter / (Mathf.PI / 5)) % 2 == 0) ? outerRadius : innerRadius;
+
+        return distanceFromCenter <= radiusAtAngle;
+    }
+    public static bool IsWithinBounds_Pentagon(Vector3 position, Vector3 center, float sideLength)
+    {
+        float radius = sideLength / (2 * Mathf.Tan(Mathf.PI / 5));
+
+        Vector2 point = new Vector2(position.x, position.y);
+        Vector2[] vertices = new Vector2[5];
+        for (int i = 0; i < 5; i++)
+        {
+            float angle_deg = 72 * i - 36;
+            float angle_rad = Mathf.PI / 180 * angle_deg;
+            vertices[i] = new Vector2(center.x + radius * Mathf.Cos(angle_rad), center.y + radius * Mathf.Sin(angle_rad));
+        }
+
+        for (int i = 0; i < 5; i++)
+        {
+            Vector2 vertex1 = vertices[i];
+            Vector2 vertex2 = vertices[(i + 1) % 5];
+            float distance = Mathf.Abs((vertex2.y - vertex1.y) * point.x - (vertex2.x - vertex1.x) * point.y + vertex2.x * vertex1.y - vertex2.y * vertex1.x) /
+                             Mathf.Sqrt(Mathf.Pow(vertex2.y - vertex1.y, 2) + Mathf.Pow(vertex2.x - vertex1.x, 2));
+
+            if (distance > radius)
+            {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    public static bool IsWithinBounds_Hexagon(Vector3 position, Vector3 center, float sideLength)
+    {
+        float radius = sideLength;
+
+        Vector2 point = new Vector2(position.x, position.y);
+        Vector2[] vertices = new Vector2[6];
+        for (int i = 0; i < 6; i++)
+        {
+            float angle_deg = 60 * i - 30;
+            float angle_rad = Mathf.PI / 180 * angle_deg;
+            vertices[i] = new Vector2(center.x + radius * Mathf.Cos(angle_rad), center.y + radius * Mathf.Sin(angle_rad));
+        }
+
+        for (int i = 0; i < 6; i++)
+        {
+            Vector2 vertex1 = vertices[i];
+            Vector2 vertex2 = vertices[(i + 1) % 6];
+            float distance = Mathf.Abs((vertex2.y - vertex1.y) * point.x - (vertex2.x - vertex1.x) * point.y + vertex2.x * vertex1.y - vertex2.y * vertex1.x) /
+                             Mathf.Sqrt(Mathf.Pow(vertex2.y - vertex1.y, 2) + Mathf.Pow(vertex2.x - vertex1.x, 2));
+
+            if (distance > radius)
+            {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    public static bool IsWithinBounds_Cross(Vector3 position, Vector3 center, float armLength)
+    {
+        Vector2 point = new Vector2(position.x, position.y);
+        Vector2 center2D = new Vector2(center.x, center.y);
+
+        float distanceFromCenter = Vector2.Distance(center2D, point);
+
+        // If the point lies within the central square (size determined by the armLength) or within any of the arms of the cross
+        if ((Mathf.Abs(position.x - center.x) <= armLength / 2 && Mathf.Abs(position.y - center.y) <= 3 * armLength / 2) ||
+            (Mathf.Abs(position.x - center.x) <= 3 * armLength / 2 && Mathf.Abs(position.y - center.y) <= armLength / 2))
+        {
+            return true;
+        }
+
+        return false;
+    }
+
+    public static IEnumerator Spawn(Action method, Func<bool> condition, float respawnRate = 0.001f)
+    {
+        while (condition())
+        {
+            method?.Invoke();
+            yield return new WaitForSeconds(respawnRate); // adjust this to spawn particles less frequently
+        }
+    }
+
+    /* TOO GNERIC FOR CURRENT BUILD , need more packages sadly
+        public static T RandomUpDownValue<T>(ref T? lastNumber, T min, T max) where T : struct, IConvertible, IComparable<T>
+        {
+            T midPoint = Operator.Divide(Operator.Add(min, max), Operator.Convert<int, T>(2));
+
+            if (lastNumber == null) // if this is the first number being generated
+            {
+                lastNumber = GetRandom(min, max);
+            }
+            else
+            {
+                if ((dynamic)lastNumber >= midPoint) // if the last number was in the upper half of the range
+                {
+                    lastNumber = GetRandom(min, midPoint); // the next number will be in the lower half
+                }
+                else // if the last number was in the lower half of the range
+                {
+                    lastNumber = GetRandom(midPoint, max); // the next number will be in the upper half
+                }
+            }
+            return (T)lastNumber;
+        }
+
+        public static T GetRandom<T>(T min, T max) where T : IConvertible
+        {
+            var type = typeof(T);
+            if (type == typeof(float) || type == typeof(double))
+            {
+                float minValue = Convert.ToSingle(min);
+                float maxValue = Convert.ToSingle(max);
+                float randomValue = UnityEngine.Random.Range(minValue, maxValue);
+                return (T)Convert.ChangeType(randomValue, type);
+            }
+            else
+            {
+                int minValue = Convert.ToInt32(min);
+                int maxValue = Convert.ToInt32(max);
+                int randomValue = UnityEngine.Random.Range(minValue, maxValue);
+                return (T)Convert.ChangeType(randomValue, type);
+            }
+        }
+    */
+
+    public static float RandomUpDownValue(ref float? lastNumber, float min, float max)
+    {
+        float midPoint = (min + max) / 2;
+
+        if (lastNumber == null) // if this is the first number being generated
+        {
+            lastNumber = UnityEngine.Random.Range(min, max);
+        }
+        else
+        {
+            if (lastNumber >= midPoint) // if the last number was in the upper half of the range
+            {
+                lastNumber = UnityEngine.Random.Range(min, midPoint); // the next number will be in the lower half
+            }
+            else // if the last number was in the lower half of the range
+            {
+                lastNumber = UnityEngine.Random.Range(midPoint, max); // the next number will be in the upper half
+            }
+        }
+        return (float)lastNumber;
+    }
+
+
+
 }
 
 

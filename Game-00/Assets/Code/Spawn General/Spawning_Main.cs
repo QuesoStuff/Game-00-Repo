@@ -12,4 +12,19 @@ public class Spawning_Main : MonoBehaviour
     {
         GENERIC.MakeSingleton(ref instance_, this, this.gameObject);
     }
+    IEnumerator RoutineClean()
+    {
+        while (true)
+        {
+            yield return new WaitForSeconds(30);
+            spawning_GameObjects_.CleanUpEntities();
+            spawning_SFX_.CleanUpEntities();
+        }
+    }
+    void Start()
+    {
+        StartCoroutine(RoutineClean());
+    }
+
+
 }

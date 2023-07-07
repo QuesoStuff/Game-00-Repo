@@ -6,7 +6,7 @@ using UnityEngine.UI;
 
 public abstract class UI : MonoBehaviour
 {
-    [SerializeField] internal Text textBox;
+    [SerializeField] protected Text textBox_;
 
     protected float duration_ = 2;
     protected float speed_ = CONSTANTS.HALF_SECOND_BLINK_SPEED;
@@ -17,6 +17,10 @@ public abstract class UI : MonoBehaviour
     protected bool indefBlink_;
     public CollectionRange<float, Color> colorRange_;
 
+    public void SetComponents()
+    {
+        textBox_.GetComponent<Text>();
+    }
     private bool isBlinking_ = false;
 
     public void SetIsBlinking(bool state)
@@ -30,7 +34,7 @@ public abstract class UI : MonoBehaviour
 
     public virtual void Init()
     {
-
+        return;
     }
     public float GetDuration()
     {
@@ -54,7 +58,7 @@ public abstract class UI : MonoBehaviour
 
     public void Update_UI_Text(string input)
     {
-        textBox.text = input;
+        textBox_.text = input;
     }
 
     public void Update_UI_Text(float input)
@@ -64,7 +68,7 @@ public abstract class UI : MonoBehaviour
 
     public void Update_UI_Color(Color newColor)
     {
-        textBox.color = newColor;
+        textBox_.color = newColor;
     }
 
     public void Update_UI_Color()
@@ -86,7 +90,7 @@ public abstract class UI : MonoBehaviour
 
     public void SetTextSize(int newSize)
     {
-        textBox.fontSize = newSize;
+        textBox_.fontSize = newSize;
     }
 
     public void SetTextSize(Vector3 startSize, float newSize, float duration)
@@ -104,7 +108,7 @@ public abstract class UI : MonoBehaviour
     {
         GENERIC.StopCurrentCoroutine(this, ref currentBlinkCoroutine_, () =>
         {
-            textBox.color = originalColor_;
+            textBox_.color = originalColor_;
             isBlinking_ = false;
         });
     }
@@ -114,13 +118,13 @@ public abstract class UI : MonoBehaviour
     public void BlinkText(Color color, Action onComplete = null)
     {
         StopBlinking();
-        originalColor_ = textBox.color;
+        originalColor_ = textBox_.color;
         currentBlinkCoroutine_ = this.FlashColorWithDuration(
             color,
             duration_,
             speed_,
-            col => textBox.color = col,
-            () => textBox.color,
+            col => textBox_.color = col,
+            () => textBox_.color,
             onComplete,
             () => Time.realtimeSinceStartup
         );
@@ -130,13 +134,13 @@ public abstract class UI : MonoBehaviour
     public void BlinkTextIndefinitely(Color color)
     {
         StopBlinking();
-        originalColor_ = textBox.color;
+        originalColor_ = textBox_.color;
         currentBlinkCoroutine_ = this.FlashColorIndefinitely(
             color,
             speed_,
             () => true,
-            col => textBox.color = col,
-            () => textBox.color,
+            col => textBox_.color = col,
+            () => textBox_.color,
             null,
             () => Time.realtimeSinceStartup
         );
@@ -145,18 +149,18 @@ public abstract class UI : MonoBehaviour
 
     public virtual void Update_UI()
     {
-
+        return;
     }
 
     // to be consolidated later 
     protected IEnumerator FadeOverTime(float duration)
     {
-        Color originalColor = textBox.color;
+        Color originalColor = textBox_.color;
         for (float t = 0.01f; t < duration; t += Time.deltaTime)
         {
-            Color color = textBox.color;
+            Color color = textBox_.color;
             color.a = Mathf.Lerp(originalColor.a, 0, t / duration);
-            textBox.color = color;
+            textBox_.color = color;
             yield return null;
         }
     }

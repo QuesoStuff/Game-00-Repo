@@ -10,24 +10,24 @@ public class UI_Bullet_Mod : UI
     public void UpdateBullet_Type_UI()
     {
         bullet_type_UI_ = string.Empty;
-        if (ACTIVE.GetIsTypeCharged())
+        if (ActiveItems.GetIsTypeCharged())
             bullet_type_UI_ += CONSTANTS_UI.UI_BULLET_TYPE_CHARGED;
-        if (ACTIVE.GetIsTypeLazer())
+        if (ActiveItems.GetIsTypeLazer())
             bullet_type_UI_ += CONSTANTS_UI.UI_BULLET_TYPE_LAZER;
-        if (ACTIVE.GetIsTypeMissle())
+        if (ActiveItems.GetIsTypeMissle())
             bullet_type_UI_ += CONSTANTS_UI.UI_BULLET_TYPE_MISSILE;
     }
 
     public void UpdateBullet_Stats_UI()
     {
         bullet_stats_UI_ = string.Empty;
-        if (ACTIVE.GetIsStatAccelerate())
+        if (ActiveItems.GetIsStatAccelerate())
             bullet_stats_UI_ += CONSTANTS_UI.UI_BULLET_STAT_ACC;
-        if (ACTIVE.GetIsStatUniformSpeed())
+        if (ActiveItems.GetIsStatUniformSpeed())
             bullet_stats_UI_ += CONSTANTS_UI.UI_BULLET_STAT_UNI;
-        if (ACTIVE.GetIsStatIncreaseHealth())
+        if (ActiveItems.GetIsStatIncreaseHealth())
             bullet_stats_UI_ += CONSTANTS_UI.UI_BULLET_STAT_HP;
-        if (ACTIVE.GetIsStatIncreasedDamage())
+        if (ActiveItems.GetIsStatIncreasedDamage())
             bullet_stats_UI_ += CONSTANTS_UI.UI_BULLET_STAT_DAM;
     }
 

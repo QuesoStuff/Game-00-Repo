@@ -29,5 +29,9 @@ public abstract class Border_SemiCircle : Border
         vertices_ = GENERIC.AssignPoints_SemiCircle(radius_, center_);
 
     }
+    public override bool IsWithinBounds(Vector3 position)
+    {
+        return GENERIC.IsWithinBounds_SemiCircle(position, center_, radius_);
+    }
 
 }

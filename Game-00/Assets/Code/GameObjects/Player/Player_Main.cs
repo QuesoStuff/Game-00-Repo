@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Player_Main : MonoBehaviour_Plus
+public class Player_Main : Main
 {
 
     [SerializeField] public Player_Controller player_Controller_;
@@ -34,9 +34,10 @@ public class Player_Main : MonoBehaviour_Plus
     }
     void Start()
     {
-        player_Config_.Config_Init();
+        player_UI_.SetComponents();
+
         player_Collision_.Congfigure_CollisionTables();
-        player_Color_.SetCurrentColor(spriterender_.color);
+        RepeatStart();
 
     }
 
@@ -46,14 +47,33 @@ public class Player_Main : MonoBehaviour_Plus
         {
             player_Controller_.Control();
         }
+
         if ((player_Move_.GetIsDashing()) && INPUT.instance_.Input_Move_Any())
         {
-            Spawning_Main.instance_.spawning_SFX_.Spawn_ExplosionDeath(transform.position, spriterender_.color);
+            if (!isAlreadyDashing_) // we start dashing
+            {
+                isAlreadyDashing_ = true;
+                StartCoroutine(DashAndSpawn(() => Spawning_Main.instance_.spawning_SFX_.Spawn_ExplosionDeath(transform.position, spriterender_.color)));
+            }
+        }
+        else
+        {
+            isAlreadyDashing_ = false; // we stop dashing
         }
     }
+
+
+    public override void RepeatStart()
+    {
+        player_Config_.Config_Init();
+        player_Color_.SetCurrentColor(spriterender_.color);
+    }
+
+
+
     void FixedUpdate()
     {
-        if (ACTIVE.GetIsTypeMissle())
+        if (ActiveItems.GetIsTypeMissle())
             player_Move_.Move_None();
         player_Move_.Moving();
         player_Move_.Moving_Accelarate();

@@ -11,6 +11,7 @@ public class UI_Main : MonoBehaviour
     [SerializeField] public UI UI_Health_;
     [SerializeField] public UI UI_KillCount_;
     [SerializeField] public UI UI_Pause_Resume_;
+    [SerializeField] public UI_CountDownStart UI_CountDownStart_;
     [SerializeField] public UI UI_Traveled_;
     [SerializeField] public UI UI_Debug_;
     [SerializeField] public UI UI_Item_;
@@ -21,10 +22,21 @@ public class UI_Main : MonoBehaviour
         GENERIC.MakeSingleton(ref instance_, this, this.gameObject);
         UI_Time.Init();
         UI_Health_.Init();
+
     }
     void Start()
     {
-
+        UI_Time.SetComponents();
+        UI_Score_.SetComponents();
+        UI_BulletCount_.SetComponents();
+        UI_Health_.SetComponents();
+        UI_KillCount_.SetComponents();
+        UI_Pause_Resume_.SetComponents();
+        UI_CountDownStart_.SetComponents();
+        UI_Traveled_.SetComponents();
+        UI_Debug_.SetComponents();
+        UI_Item_.SetComponents();
+        UI_Bullet_Stat_.SetComponents();
     }
 
 

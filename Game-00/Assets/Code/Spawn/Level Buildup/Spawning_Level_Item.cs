@@ -5,6 +5,7 @@ using UnityEngine;
 public class Spawning_Level_Item : Spawning_Level
 {
     [SerializeField] protected List<GameObject> prefabs_Extra;
+    [SerializeField] protected List<GameObject> prefabs_Random_SP;
 
     public override GameObject RandomPickEntity()
     {

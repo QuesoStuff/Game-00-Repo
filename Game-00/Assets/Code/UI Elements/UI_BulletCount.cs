@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class UI_BulletCount : UI
 {
-    [SerializeField] public Record_Main records_;
+    [SerializeField] private Record_Main records_;
 
     public override void Update_UI()
     {

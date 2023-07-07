@@ -33,4 +33,31 @@ public abstract class Sound : MonoBehaviour
         int randomIndex = (int)GENERIC.GetRandomNumberInRange(0, audioClips_.Length);
         PlaySound(randomIndex);
     }
+    public void PlayAllSoundsRandomlyOnce()
+    {
+        StartCoroutine(PlayAllSoundsRandomlyOnceCoroutine());
+    }
+
+    private IEnumerator PlayAllSoundsRandomlyOnceCoroutine()
+    {
+        List<int> indices = new List<int>();
+        for (int i = 0; i < audioClips_.Length; i++)
+        {
+            indices.Add(i);
+        }
+
+        while (indices.Count > 0)
+        {
+            int randomIndex = Random.Range(0, indices.Count);
+            PlaySound(indices[randomIndex]);
+            indices.RemoveAt(randomIndex);
+
+            while (audioSourcea_.isPlaying)
+            {
+                yield return null;
+            }
+        }
+    }
+
+
 }

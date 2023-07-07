@@ -32,5 +32,9 @@ public class Border_Pill : Border
 
     }
 
+    public override bool IsWithinBounds(Vector3 position)
+    {
+        return GENERIC.IsWithinBounds_Pill(position, center_, length_, radius_);
+    }
 
 }

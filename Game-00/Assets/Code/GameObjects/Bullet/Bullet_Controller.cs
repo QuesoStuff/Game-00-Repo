@@ -15,19 +15,19 @@ public class Bullet_Controller : MonoBehaviour
 
     public void Bullet_Configuration_Stat()
     {
-        if (ACTIVE.GetIsStatAccelerate())
+        if (ActiveItems.GetIsStatAccelerate())
         {
             bullet_Main_.bullet_Config_.BulletConfigurate_Extra_Accelerate();
         }
-        if (ACTIVE.GetIsStatIncreasedDamage())
+        if (ActiveItems.GetIsStatIncreasedDamage())
         {
             bullet_Main_.bullet_Config_.BulletConfigurate_Extra_IncreasedDamage();
         }
-        if (ACTIVE.GetIsStatIncreaseHealth())
+        if (ActiveItems.GetIsStatIncreaseHealth())
         {
             bullet_Main_.bullet_Config_.BulletConfigurate_Extra_IncreasedHP();
         }
-        if (ACTIVE.GetIsStatUniformSpeed())
+        if (ActiveItems.GetIsStatUniformSpeed())
         {
             bullet_Main_.bullet_Config_.BulletConfigurate_Extra_UniformSpeed();
         }
@@ -35,19 +35,19 @@ public class Bullet_Controller : MonoBehaviour
     }
     public void Bullet_Configuration_Type(bool IsSoloCharged = false)
     {
-        if (ACTIVE.GetIsTypeCharged() || IsSoloCharged)
+        if (ActiveItems.GetIsTypeCharged() || IsSoloCharged)
         {
             bullet_Main_.bullet_Config_.BulletConfigurate_ChargedShot();
             bullet_Main_.bullet_Config_.Config_ChargedShot(transform.localScale * sizeScale_, sizeDuration_);
-            if (!ACTIVE.GetIsTypeLazer())
+            if (!ActiveItems.GetIsTypeLazer())
                 bullet_Main_.ChangeSprite();
         }
-        if (ACTIVE.GetIsTypeLazer())
+        if (ActiveItems.GetIsTypeLazer())
         {
             bullet_Main_.bullet_Config_.BulletConfigurate_Lazer();
             bullet_Main_.bullet_Config_.Config_Lazer(lazerLength_);
         }
-        if (ACTIVE.GetIsTypeMissle())
+        if (ActiveItems.GetIsTypeMissle())
         {
             //bullet_Main_.bullet_Config_.BulletConfigurate_MIssile();
         }
@@ -92,7 +92,7 @@ public class Bullet_Controller : MonoBehaviour
 
     public void bullet_Normal_Bullet(bool IsSoloCharged = false)
     {
-        if (ACTIVE.GetIsEmpty() || IsSoloCharged)
+        if (ActiveItems.GetIsEmpty() || IsSoloCharged)
         {
             if (GENERIC.CoinToss(20, 80))
                 bullet_Main_.bullet_Health_.Set_Damage(2);

@@ -2,17 +2,18 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public abstract class Spawning_Level : MonoBehaviour
+public abstract class Spawning_Level : Pooling_Spawning
 {
     [SerializeField] protected List<GameObject> prefabs_;
-    [SerializeField] protected GameObject currPrefab_;
+    protected GameObject currPrefab_;
+    protected Main currMain_;
 
-    [SerializeField] protected int maxEntities_ = 100;
     protected static int totalSpawnedAcrossAll_ = 0;
     protected static int totalActiveAcrossAll_ = 0;
     protected static int totalDestroyedAcrossAll_ = 0;
 
-    protected List<GameObject> entities_ = new List<GameObject>();
+    ///protected Queue<GameObject> pool_ = new Queue<GameObject>();
+    //protected List<GameObject> entities_ = new List<GameObject>();
     protected int activeEntitiesCount_ = 0;
     protected int totalEntitiesSpawnedLocally_ = 0;
     protected int destroyedEntitiesCountLocally_ = 0;
@@ -31,6 +32,7 @@ public abstract class Spawning_Level : MonoBehaviour
     protected float delayByDestroyedLocally_;
     protected float delayByDestroyedTotal_;
     protected float delayByPlayerHealth_;
+    protected float delayByFrameRate_;
 
     protected Coroutine spawnCoroutine_;
 
@@ -73,7 +75,35 @@ public abstract class Spawning_Level : MonoBehaviour
     {
         return;
     }
-    //public abstract void GameObject_Config(GameObject newGameObject);
+    public virtual void AdjustDelayByFrameRate()
+    {
+        float frameRate = PerformanceMonitor.instance_.GetFrameRate();
+        if (frameRate < 30) // If framerate drops below 30
+        {
+            delayByFrameRate_ = 25; // Increase delay to decrease spawn rate
+        }
+        else if (frameRate >= 30 && frameRate < 60) // If framerate is between 30 and 60
+        {
+            delayByFrameRate_ = 5; // Keep moderate delay
+        }
+        else // If framerate is above 60
+        {
+            delayByFrameRate_ = 0; // Decrease delay to increase spawn rate
+        }
+    }
+    public virtual IEnumerator GameObject_Config()
+    {
+        currMain_ = currPrefab_.GetComponent<Main>();
+        if (currMain_ != null)
+        {
+            currMain_.Revive();
+            yield return new WaitUntil(() => currPrefab_.activeInHierarchy);
+            currMain_.RepeatStart();
+        }
+        else if (currPrefab_.tag != CONSTANTS.Wall_Tag)
+            Debug.LogError("NO MAIN");
+        yield return null;
+    }
 
 
 
@@ -107,10 +137,7 @@ public abstract class Spawning_Level : MonoBehaviour
         return destroyedEntitiesCountLocally_;
     }
 
-    public int GetTotalDestroyedCountTotal()
-    {
-        return totalDestroyedAcrossAll_;
-    }
+
 
     public void StartSpawn()
     {
@@ -126,7 +153,7 @@ public abstract class Spawning_Level : MonoBehaviour
             CleanUpEntities();
             if (GetActiveCountLocally() < maxEntities_)
             {
-                SpawnEntity();
+                yield return SpawnEntity();
             }
             AdjustSpawnTime();
             yield return new WaitForSeconds(spawnDelay_);
@@ -134,19 +161,32 @@ public abstract class Spawning_Level : MonoBehaviour
     }
     public virtual bool IsInBound(Vector3 position)
     {
+        Debug.Log(Border_Main.instance_.currentBorder_ == null);
         return Border_Main.instance_.currentBorder_.IsWithinBounds(position);
     }
-    public virtual void CleanUpEntities()
+    public override void CleanUpEntities()
     {
-        int beforeClean = activeEntitiesCount_;
-        entities_.RemoveAll(item => item == null);
-        int afterClean = entities_.Count;
-        activeEntitiesCount_ = afterClean;
-        totalActiveAcrossAll_ -= beforeClean - afterClean;
-        int destroyedInThisCleanUp = beforeClean - afterClean;
-        destroyedEntitiesCountLocally_ += destroyedInThisCleanUp;
-        totalDestroyedAcrossAll_ += destroyedInThisCleanUp;
+        // for each iteration could cause
+        for (int i = entities_.Count - 1; i >= 0; i--)
+        {
+            var entity = entities_[i];
+            if (entity == null)
+            {
+                entities_.RemoveAt(i);
+                continue;
+            }
+
+            if (!entity.activeInHierarchy)
+            {
+                pool_.Enqueue(entity);
+                entities_.RemoveAt(i);
+                activeEntitiesCount_--;
+                totalActiveAcrossAll_--;
+                totalDestroyedAcrossAll_++;
+            }
+        }
     }
+
 
     public virtual Vector3 RandomPosition()
     {
@@ -162,17 +202,31 @@ public abstract class Spawning_Level : MonoBehaviour
 
         return randomPos;
     }
-    public virtual void SpawnEntity()
+    public virtual IEnumerator SpawnEntity()
     {
         currPrefab_ = RandomPickEntity();
         Vector3 position = Respawn();
         ResetMinMaxDistance();  // Reset distances after finding a valid position
-        GameObject entity = Instantiate(currPrefab_, position, Quaternion.identity);
-        //GameObject_Config(entity);
-        entities_.Add(entity);
+
+        GameObject entity;
+
+        if (pool_.Count > 0)
+        {
+            entity = pool_.Dequeue();
+            entity.transform.position = position;
+            entity.SetActive(true);
+        }
+        else
+        {
+            entity = Instantiate(currPrefab_, position, Quaternion.identity);
+            currPrefab_ = entity;
+            yield return GameObject_Config();
+            entities_.Add(entity);
+            totalEntitiesSpawnedLocally_++;
+            totalSpawnedAcrossAll_++;
+        }
+
         activeEntitiesCount_++;
-        totalEntitiesSpawnedLocally_++;
-        totalSpawnedAcrossAll_++;
         totalActiveAcrossAll_++;
     }
 
@@ -192,14 +246,14 @@ public abstract class Spawning_Level : MonoBehaviour
         AdjustDelayByTotalSpawnedTotal();
         AdjustDelayByDestroyedLocally();
         AdjustDelayByDestroyedTotal();
+        AdjustDelayByFrameRate();
         spawnDelay_ = startingTime_ + delayByTime_ + delayByActiveLocally_ + delayByActiveTotal_ + delayByTotalSpawnedLocally_ + delayByTotalSpawnedTotal_ + delayByDestroyedLocally_ + delayByDestroyedTotal_ + delayByPlayerHealth_;
     }
     public Vector3 Respawn()
     {
-        /*
+
         Vector3 position;
-        int maxAttempts = 1000;
-        for (int i = 0; i < maxAttempts; i++)
+        for (int i = 0; i < CONSTANTS.LOOP_LIMIT; i++)
         {
             position = RandomPosition();
             if (IsInBound(position))
@@ -207,9 +261,9 @@ public abstract class Spawning_Level : MonoBehaviour
                 return position;
             }
         }
-        Debug.LogWarning("Could not find a valid position after " + maxAttempts + " attempts.");
-       */
-        return Vector3.zero;  // Or return another default position
+        Debug.LogWarning("Could not find a valid position after " + CONSTANTS.LOOP_LIMIT + " attempts.");
+
+        return Border_Main.instance_.currentBorder_.GetCenter();
     }
 
 }

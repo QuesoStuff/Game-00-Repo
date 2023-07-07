@@ -97,7 +97,7 @@ public class Player_Controller : MonoBehaviour
     }
     public void Item_Dash(float duation)
     {
-        if (ACTIVE.GetIsDashing())
+        if (ActiveItems.GetIsDashing())
         {
             CameraControl.instance_.Toggle();
             player_Main_.player_Color_.SetColor(new Color(1f, 0.5f, 0f, 1f));
@@ -125,7 +125,7 @@ public class Player_Controller : MonoBehaviour
 
     public void Control()
     {
-        if (!ACTIVE.GetIsTypeMissle())
+        if (!ActiveItems.GetIsTypeMissle())
         {
             Control_Move();
             Move_Dash();

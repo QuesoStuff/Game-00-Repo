@@ -38,4 +38,8 @@ public class Border_Diamond : Border
         vertices_ = GENERIC.AssignPoints_Diamond(width_, height_, center_);
     }
 
+    public override bool IsWithinBounds(Vector3 position)
+    {
+        return GENERIC.IsWithinBounds_Diamond(position, center_, width_, height_);
+    }
 }

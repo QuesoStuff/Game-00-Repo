@@ -34,6 +34,10 @@ public class Border_Donut : Border
 
 
 
+    public override bool IsWithinBounds(Vector3 point)
+    {
+        return GENERIC.IsWithinBounds_Donut(point, center_, innerRadius_, outerRadius_);
+    }
 
 
 }

@@ -6,8 +6,8 @@ public abstract class Enemy_Config : MonoBehaviour
 {
     [SerializeField] public Enemy_Main enemy_Main_;
     private Vector2 currInput_;
-    protected List<Func<bool>> methods_;
-    private List<Vector2> inputPairs_;
+    protected List<Func<bool>> methods_ = new List<Func<bool>>();
+    private List<Vector2> inputPairs_ = new List<Vector2>();
 
 
     public abstract void ConfigureMethods();
@@ -71,4 +71,8 @@ public abstract class Enemy_Config : MonoBehaviour
         enemy_Main_.enemy_Color_.color_Range_ = new ColorRange(randomColor, Color.white, (int)hp);
         enemy_Main_.enemy_Color_.SetNextColor();
     }
+
+
+
+
 }

@@ -10,8 +10,7 @@ public class Item_Config_Lazer : Item_Config
 
     public override void Config_Init()
     {
-        GameObject gameObject = GameObject.FindGameObjectWithTag(CONSTANTS.Active_Tag);
-        active_ = gameObject.GetComponent<ACTIVE>();
+        ActiveItems_ = gameObject.GetComponent<ActiveItems>();
         currItemConfig_ = CONSTANTS.ITEM_TYPE.LAZER;
 
         methodStart_ = UI_Main.instance_.UI_Bullet_Stat_.Update_UI;
@@ -26,7 +25,7 @@ public class Item_Config_Lazer : Item_Config
 
     public override void Collision_With_Player()
     {
-        StartCoroutine(active_.SelectConfig(CONSTANTS.ACTIVE_CONFIG.LAZER, methodStart_, methodBlinking_, methodEnd_, duration_, blinkingTime_));
+        Configure_Item_Config_Lazer();
     }
 
 

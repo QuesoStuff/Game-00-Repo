@@ -9,8 +9,7 @@ public class Item_Config_Dash : Item_Config
 
     public override void Config_Init()
     {
-        GameObject gameObject = GameObject.FindGameObjectWithTag(CONSTANTS.Active_Tag);
-        active_ = gameObject.GetComponent<ACTIVE>();
+        ActiveItems_ = gameObject.GetComponent<ActiveItems>();
         currItemConfig_ = CONSTANTS.ITEM_TYPE.DASH;
         methodStart_ = UI_Main.instance_.UI_Item_.Update_UI;
         methodStart_ += () => Player_Main.instance_.player_Controller_.Item_Dash(15 - 3);
@@ -26,7 +25,7 @@ public class Item_Config_Dash : Item_Config
 
     public override void Collision_With_Player()
     {
-        StartCoroutine(active_.SelectConfig(CONSTANTS.ACTIVE_CONFIG.DASH, methodStart_, methodBlinking_, methodEnd_, duration_, blinkingTime_));
+        Configure_Item_Config_Dash();
     }
 
 

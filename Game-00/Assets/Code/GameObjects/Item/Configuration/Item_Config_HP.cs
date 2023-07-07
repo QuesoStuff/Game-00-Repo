@@ -16,9 +16,7 @@ public class Item_Config_HP : Item_Config
 
     public override void Collision_With_Player()
     {
-        Player_Main.instance_.player_Health_.Heal(itemHP_);
-        UI_Main.instance_.UI_Health_.Update_UI();
-        item_Main_.item_Health_.Damage();
+        Configure_Item_Config_HP();
     }
 
 

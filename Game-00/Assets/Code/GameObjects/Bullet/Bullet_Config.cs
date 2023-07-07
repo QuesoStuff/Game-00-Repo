@@ -11,7 +11,7 @@ public class Bullet_Config : MonoBehaviour
 
     private bool is_Type_Still_Charged_;
     private bool doneCharging_;
-    private static int activeBulletCount_;
+    private static int ActiveItemsBulletCount_;
     private static int maxBulletCount = 20;
     public static CollectionRange<int, Color> colorRange_;
     public static CollectionRange<int, float> speedRange_;
@@ -66,9 +66,9 @@ public class Bullet_Config : MonoBehaviour
 
     public static bool LimitBullet(bool IsSoloCharged = false)
     {
-        bool totalCount = GENERIC.CheckLimit<int>(() => true, activeBulletCount_, maxBulletCount);
-        bool missile = GENERIC.CheckLimit<int>(() => ACTIVE.GetIsTypeMissle(), activeBulletCount_, 2);
-        bool chargedShot = GENERIC.CheckLimit<int>(() => ACTIVE.GetIsTypeCharged(), activeBulletCount_, 3);
+        bool totalCount = GENERIC.CheckLimit<int>(() => true, ActiveItemsBulletCount_, maxBulletCount);
+        bool missile = GENERIC.CheckLimit<int>(() => ActiveItems.GetIsTypeMissle(), ActiveItemsBulletCount_, 2);
+        bool chargedShot = GENERIC.CheckLimit<int>(() => ActiveItems.GetIsTypeCharged(), ActiveItemsBulletCount_, 3);
 
         bool valid = totalCount && missile && chargedShot;
         return valid;
@@ -89,12 +89,12 @@ public class Bullet_Config : MonoBehaviour
 
     public static void SetBulletCount(int newCOunt)
     {
-        activeBulletCount_ = newCOunt;
-        UI_Main.instance_.UI_Debug_.Update_UI_Text(activeBulletCount_);
+        ActiveItemsBulletCount_ = newCOunt;
+        UI_Main.instance_.UI_Debug_.Update_UI_Text(ActiveItemsBulletCount_);
     }
     public static int GetBulletCount()
     {
-        return activeBulletCount_;
+        return ActiveItemsBulletCount_;
     }
     public bool GetStillCharging()
     {
@@ -126,7 +126,7 @@ public class Bullet_Config : MonoBehaviour
     public float Bullet_Speed()
     {
         float speed = currBulletSpeed_;
-        currBulletSpeed_Mod = speed * speedRange_.GetResultBasedOnThreshold(activeBulletCount_);
+        currBulletSpeed_Mod = speed * speedRange_.GetResultBasedOnThreshold(ActiveItemsBulletCount_);
         static_shared_Speed_ = currBulletSpeed_Mod;
         static_shared_accelarate_ = currBulletAccelerate_;
         return currBulletSpeed_Mod;
@@ -134,8 +134,8 @@ public class Bullet_Config : MonoBehaviour
 
     public Color BulletColor()
     {
-        Color bulletColor = colorRange_.GetResultBasedOnThreshold(activeBulletCount_);
-        bulletColor = GENERIC.ChangeOpacity(bulletColor, 1 - (float)activeBulletCount_ / maxBulletCount);
+        Color bulletColor = colorRange_.GetResultBasedOnThreshold(ActiveItemsBulletCount_);
+        bulletColor = GENERIC.ChangeOpacity(bulletColor, 1 - (float)ActiveItemsBulletCount_ / maxBulletCount);
         bullet_Main_.bullet_Color_.SetCurrentColor(bulletColor);
         bullet_Main_.bullet_Color_.SetColor();
         return bulletColor;
@@ -182,7 +182,7 @@ public class Bullet_Config : MonoBehaviour
     }
     public void BulletConfigurate_Audio(bool IsSoloCharged = false)
     {
-        if (ACTIVE.GetIsTypeCharged() || IsSoloCharged)
+        if (ActiveItems.GetIsTypeCharged() || IsSoloCharged)
         {
             bullet_Main_.Bullet_Sound_.PlayRandomSound();
         }

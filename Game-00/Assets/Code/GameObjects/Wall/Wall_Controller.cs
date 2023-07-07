@@ -21,8 +21,7 @@ public class Wall_Controller : MonoBehaviour
     {
         if (wall_Main_.wall_Config_.GetIsNormal())
         {
-            wall_Main_.SetActive(false);
-            Destroy(wall_Main_);
+            wall_Main_.StopMain();
             return;
         }
         if (wall_Main_.wall_Config_.GetIsMoving())

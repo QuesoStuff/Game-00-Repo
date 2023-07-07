@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public abstract class Spawning : MonoBehaviour
+public abstract class Spawning : Pooling_Spawning
 {
     public void Spawn(GameObject obj, Vector2 startPosition, Color startColor, bool shouldRotate, bool constantLifetimeAndDuration)
     {

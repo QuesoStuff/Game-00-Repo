@@ -1,6 +1,8 @@
+using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
-
-public abstract class MonoBehaviour_Plus : MonoBehaviour//, I_MonoBehaviourPlus
+using System;
+public abstract class Main : MonoBehaviour//, I_MonoBehaviourPlus
 {
     [SerializeField] public Animator animator_;
     [SerializeField] public Rigidbody2D rb2d_;
@@ -11,13 +13,15 @@ public abstract class MonoBehaviour_Plus : MonoBehaviour//, I_MonoBehaviourPlus
     protected Coroutine currCoroutine = null;
     protected float currRotationSpeed_;
     protected float currRotateAngle_;
+    protected bool isAlreadyDashing_ = false;
+    protected float respawnRate_ = 0.001f;
 
-    public void SetActive(bool value)
+    public void SetActiveItems(bool value)
     {
-        isActive_ = value;
+        isActiveItems_ = value;
     }
     //private Coroutine currentCoroutine_ = null;
-    protected bool isActive_ = true;
+    protected bool isActiveItems_ = true;
 
     protected bool isDestroyed_ = false;
 
@@ -34,6 +38,34 @@ public abstract class MonoBehaviour_Plus : MonoBehaviour//, I_MonoBehaviourPlus
     public void AdjustChildDistance_All(float factor = 2)
     {
         GENERIC.AdjustChildDistance_All(transform, factor);
+    }
+
+
+    protected IEnumerator DashAndSpawn(Action method)
+    {
+        yield return GENERIC.Spawn(method, () => isAlreadyDashing_, respawnRate_);
+    }
+
+
+    public void FakeKill()
+    {
+        if (collision_ != null)
+        {
+            collision_.enabled = false;
+        }
+
+        if (spriterender_ != null)
+        {
+            spriterender_.enabled = false;
+        }
+
+        StartCoroutine(DisableAfterComplete());
+    }
+
+    IEnumerator DisableAfterComplete()
+    {
+        yield return new WaitUntil(() => !IsInvoking() && (currCoroutine == null));
+        gameObject.SetActive(false);
     }
 
 
@@ -84,11 +116,26 @@ public abstract class MonoBehaviour_Plus : MonoBehaviour//, I_MonoBehaviourPlus
             Destroy(gameObject, delay);
         }
     }
-    public void FakeKill(bool state = true)
+
+    public void Revive()
     {
-        collision_.enabled = !state;
-        spriterender_.enabled = !state;
+        gameObject.SetActive(true);
+
+        if (collision_ != null)
+        {
+            collision_.enabled = true;
+        }
+
+        if (spriterender_ != null)
+        {
+            spriterender_.enabled = true;
+        }
     }
+    public void StopMain()
+    {
+        enabled = false;
+    }
+
     public virtual Vector3 Offset(Vector2 position)
     {
         return transform.position;
@@ -109,6 +156,13 @@ public abstract class MonoBehaviour_Plus : MonoBehaviour//, I_MonoBehaviourPlus
     {
         GENERIC.StopCurrentCoroutine(this, ref currCoroutine);
     }
+
+    public virtual void RepeatStart()
+    {
+        return;
+    }
+
+
 
 }
 

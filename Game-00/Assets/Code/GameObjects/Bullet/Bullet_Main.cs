@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Bullet_Main : MonoBehaviour_Plus
+public class Bullet_Main : Main
 {
     [SerializeField] public Bullet_Controller bullet_Controller_;
     [SerializeField] public Collision bullet_Collision_;
@@ -14,26 +14,32 @@ public class Bullet_Main : MonoBehaviour_Plus
     [SerializeField] public Color_General bullet_Color_;
 
 
-    public static void Static_Create(Vector3 position, Quaternion rotation, Vector3 directoin, GameObject prefab, bool IsSoloCharged = false)
+    public static GameObject Static_Create(Vector3 position, Quaternion rotation, Vector3 directoin, GameObject prefab, bool IsSoloCharged = false)
     {
+        GameObject bulletInstance = null;
         if (Bullet_Config.LimitBullet(IsSoloCharged))
         {
-            GameObject bulletInstance = Instantiate(prefab, position, rotation);
+            bulletInstance = Instantiate(prefab, position, rotation);
             Bullet_Main bullet = bulletInstance.GetComponent<Bullet_Main>();
             bullet.Init(directoin, IsSoloCharged);
         }
+        return bulletInstance;
     }
 
 
-    void Init(Vector2 direction, bool IsSoloCharged = false)
+    public void Init(Vector2 direction, bool IsSoloCharged = false)
     {
         if (direction == Vector2.zero)
             direction = Direction.GenerateRandomDirection();
         bullet_Move_.Set(direction);
         bullet_Direction_.SetDirection();
         bullet_Direction_.StartingRotation();
-        Kill(4 * CONSTANTS.DEFSULT_BULLET_LIFE);
-        bullet_Health_.AddToAction_OnDeath(() => Kill());
+
+        this.DelayMethod(4 * CONSTANTS.DEFSULT_BULLET_LIFE, FakeKill);
+        bullet_Health_.AddToAction_OnDeath(() => FakeKill());
+        bullet_Health_.AddToAction_OnDeath(() => Bullet_Config.SetBulletCount(Bullet_Config.GetBulletCount() - 1));
+
+
         Bullet_Config.SetBulletCount(Bullet_Config.GetBulletCount() + 1);
         bullet_Color_.color_Range_ = new ColorRange(Color.green, Color.red, 5);
         Bullet_Config.colorRange_ = new CollectionRange<int, Color>(new List<int> { 1, 3, 7, 11 }, bullet_Color_.color_Range_.GetColors());
@@ -59,15 +65,15 @@ public class Bullet_Main : MonoBehaviour_Plus
 
     void OnBecameInvisible()
     {
-        Kill(CONSTANTS.DEFSULT_BULLET_LIFE);
+        this.DelayMethod(CONSTANTS.DEFSULT_BULLET_LIFE, FakeKill);
     }
     void Update()
     {
-        if (ACTIVE.GetIsTypeMissle())
+        if (ActiveItems.GetIsTypeMissle())
         {
             bullet_Controller_.Bullet_Missle_Controls();
         }
-        if (ACTIVE.GetIsStatUniformSpeed())
+        if (ActiveItems.GetIsStatUniformSpeed())
         {
             bullet_Config_.BulletConfigurate_Extra_UniformSpeed();
         }
@@ -75,10 +81,25 @@ public class Bullet_Main : MonoBehaviour_Plus
         {
             Vector3 offset = Offset(-bullet_Direction_.GetDirection());
             Spawning_Main.instance_.spawning_SFX_.Spawn_ExplosionHurt(transform.position + offset, spriterender_.color);
+
+            // we start spawning
+            if (!isAlreadyDashing_) // we start spawning
+            {
+                isAlreadyDashing_ = true;
+                StartCoroutine(DashAndSpawn(() =>
+                {
+                    Vector3 offset = Offset(-bullet_Direction_.GetDirection());
+                    Spawning_Main.instance_.spawning_SFX_.Spawn_ExplosionHurt(transform.position + offset, spriterender_.color);
+                }));
+            }
+        }
+        else
+        {
+            isAlreadyDashing_ = false; // we stop spawning
         }
         if (bullet_Config_.GetDoneCharging())
         {
-            if (ACTIVE.GetIsTypeLazer())
+            if (ActiveItems.GetIsTypeLazer())
             {
                 Vector3 offset = Offset(-bullet_Direction_.GetDirection());
                 Spawning_Main.instance_.spawning_SFX_.Spawn_ExplosionHurt(transform.position + offset, spriterender_.color);
@@ -87,6 +108,7 @@ public class Bullet_Main : MonoBehaviour_Plus
                 Spawning_Main.instance_.spawning_SFX_.Spawn_ExplosionDeath(transform.position, spriterender_.color);
         }
     }
+
     void FixedUpdate()
     {
         bullet_Move_.Moving();

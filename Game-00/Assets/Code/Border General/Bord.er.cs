@@ -13,7 +13,6 @@ public abstract class Border
     public GameObject GetBorderObject()
     {
         Vector3 scale = borderObject_.transform.localScale;
-        Debug.Log($"Border object scale: {scale}");
         return borderObject_;
     }
     protected Border(GameObject borderObject, float rotate = 0)
@@ -27,6 +26,10 @@ public abstract class Border
     protected Border(BorderParameters parameters, GameObject borderObject, float rotate = 0) : this(borderObject)
     {
         rotation_ = rotate;
+    }
+    public Vector3 GetCenter()
+    {
+        return center_;
     }
 
     public abstract void SetDimensions(float? param1 = null, float? param2 = null, float? param3 = null);
@@ -111,7 +114,7 @@ public abstract class Border
         lineRenderer_.positionCount = vertices_.Length;
         lineRenderer_.SetPositions(vertices_);
     }
-    public bool IsWithinBounds(Vector3 position)
+    public virtual bool IsWithinBounds(Vector3 position)
     {
         // Adjust the Z coordinate of the position to match that of the Border object
         position.z = center_.z;

@@ -37,6 +37,10 @@ public class Border_Star : Border
     {
         vertices_ = GENERIC.AssignPoints_Star(outerRadius_, innerRadius_, center_);
     }
+    public override bool IsWithinBounds(Vector3 position)
+    {
+        return GENERIC.IsWithinBounds_Star(position, center_, outerRadius_, innerRadius_);
+    }
 
 
 }

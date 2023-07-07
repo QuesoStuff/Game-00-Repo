@@ -9,11 +9,11 @@ public class UI_Item : UI
     public void UpdateItem_UI()
     {
         item_UI_ = string.Empty;
-        if (ACTIVE.GetIsDashing())
+        if (ActiveItems.GetIsDashing())
         {
             item_UI_ += "[- Dashing -]";
         }
-        if (ACTIVE.GetIsFrozen())
+        if (ActiveItems.GetIsFrozen())
         {
             item_UI_ += "[- Frozen -]";
         }

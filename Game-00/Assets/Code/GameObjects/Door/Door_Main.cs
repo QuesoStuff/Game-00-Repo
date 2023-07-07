@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Door_Main : MonoBehaviour_Plus
+public class Door_Main : Main
 {
     [SerializeField] public Door_Controller door_Controller_;
     [SerializeField] public Collision door_Collision_;
@@ -16,14 +16,19 @@ public class Door_Main : MonoBehaviour_Plus
 
     void Start()
     {
-        ACTIVE.OnGamePausedChanged += door_Controller_.EventTrigger_PauseFading;
+        TriggerEvents.OnGamePausedChanged += door_Controller_.EventTrigger_PauseFading;
         FadeInOut();
         door_Collision_.Congfigure_CollisionTables();
-        door_Config_.Config_Random();
+        RepeatStart();
     }
 
     void Update()
     {
 
     }
+    public override void RepeatStart()
+    {
+        door_Config_.Config_Random();
+    }
+
 }

@@ -14,11 +14,11 @@ public class Spawning_Level_Main : MonoBehaviour
 
 
 
-    private const int MaxTotalEntities = CONSTANTS.DEFAULT_MAX_SPAWNING_COUNT;
+    private const int MaxTotalEntities_ = CONSTANTS.DEFAULT_MAX_SPAWNING_COUNT;
 
-    private bool spawningIsActive = true;
+    private bool spawningIsActive_ = true;
 
-    private int GetTotalActiveEntities()
+    private int GetActiveCountLocally()
     {
         return enemySpawner_.GetActiveCountLocally()
             + itemSpawner_.GetActiveCountLocally()
@@ -55,7 +55,7 @@ public class Spawning_Level_Main : MonoBehaviour
         itemSpawner_.StopSpawningRoutine();
         wallSpawner_.StopSpawningRoutine();
         doorSpawner_.StopSpawningRoutine();
-        spawningIsActive = false;
+        spawningIsActive_ = false;
     }
 
     void Update()
@@ -64,14 +64,14 @@ public class Spawning_Level_Main : MonoBehaviour
         {
             StopSpawners();
         }
-        else if (spawningIsActive && GetTotalActiveEntities() >= MaxTotalEntities)
+        else if (spawningIsActive_ && GetActiveCountLocally() >= MaxTotalEntities_)
         {
             StopSpawners();
         }
-        else if (!spawningIsActive && GetTotalActiveEntities() <= 0.75 * MaxTotalEntities)
+        else if (!spawningIsActive_ && GetActiveCountLocally() <= 0.75 * MaxTotalEntities_)
         {
             StartSpawners();
-            spawningIsActive = true;
+            spawningIsActive_ = true;
         }
     }
 }
