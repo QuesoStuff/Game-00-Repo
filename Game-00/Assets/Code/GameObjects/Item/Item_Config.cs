@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public abstract class Item_Config : MonoBehaviour
+public abstract class Item_Config : Config, I_SetComponents
 {
 
 
@@ -12,19 +12,55 @@ public abstract class Item_Config : MonoBehaviour
 
     [SerializeField] public Item_Main item_Main_;
     [SerializeField] public ActiveItems ActiveItems_;
-    protected CONSTANTS.ITEM_TYPE currItemConfig_;
+    protected CONSTANTS_ENUM.ITEM_TYPE currItemConfig_;
     protected Action methodStart_;
     protected Action methodBlinking_;
     protected Action methodEnd_;
-    protected float duration_ = 3;
-    protected float blinkingTime_ = 1;
+    protected float duration_ = CONSTANTS.DEFAULT_DURATION_ITEM_LIFETIME;
+    protected float blinkingTime_ = CONSTANTS.DEFAULT_DURATION_BLINKING_UI;
+    public override void Revive()
+    {
+        item_Main_.item_Controller_.Revive();
+    }
 
 
-    public void SetItemConfig(CONSTANTS.ITEM_TYPE newType)
+    public void SetComponents()
+    {
+        GameObject activeItemsGameObject = GameObject.FindGameObjectWithTag(CONSTANTS_STRING.ActiveItems_Tag);
+        ActiveItems_ = activeItemsGameObject.GetComponent<ActiveItems>();
+    }
+
+    public override void Config_OnDeath()
+    {
+        OnDeath_ = () =>
+     {
+         item_Main_.item_Controller_.FakeKill();
+     };
+    }
+    public override void Config_Init()
+    {
+        Init_Values();
+        if (currItemConfig_ != CONSTANTS_ENUM.ITEM_TYPE.SCORE &&
+        currItemConfig_ != CONSTANTS_ENUM.ITEM_TYPE.HP &&
+        currItemConfig_ != CONSTANTS_ENUM.ITEM_TYPE.HP_AND_SCORE)
+            SetComponents();
+
+        Config_OnDeath();
+        item_Main_.item_Color_.SetRandomColor();
+        item_Main_.item_Health_.AddToAction_OnDeath(OnDeath_);
+
+        item_Main_.item_Collision_.Congfigure_table_OnTriggerEnter2D();
+        item_Main_.item_Collision_.Congfigure_table_OnTriggerStay2D();
+        item_Main_.item_Controller_.ConfigStartRotate();
+        item_Main_.item_Controller_.ConfigRotateSpeed();
+        item_Main_.item_Controller_.SideRotate();
+
+    }
+    public void SetItemConfig(CONSTANTS_ENUM.ITEM_TYPE newType)
     {
         currItemConfig_ = newType;
     }
-    public CONSTANTS.ITEM_TYPE GetItemConfig()
+    public CONSTANTS_ENUM.ITEM_TYPE GetItemConfig()
     {
         return currItemConfig_;
     }
@@ -46,102 +82,250 @@ public abstract class Item_Config : MonoBehaviour
         return itemHP_;
     }
 
-    public abstract void Config_Init();
     public abstract void Collision_With_Player();
 
-    public virtual void Configure_Item_Config_Accelarate()
+    public virtual void Collision_Item_Config_Accelarate()
     {
-        StartCoroutine(ActiveItems_.SelectConfig(CONSTANTS.ActiveItems_CONFIG.ACCELARATE, methodStart_, methodBlinking_, methodEnd_, duration_, blinkingTime_));
+        StartCoroutine(ActiveItems_.SelectConfig(CONSTANTS_ENUM.ACTIVE_ITEM_CONFIG.ACCELARATE, methodStart_, methodBlinking_, methodEnd_, duration_, blinkingTime_));
 
     }
 
-    public virtual void Configure_Item_Config_BulletDamage()
+    public virtual void Collision_Item_Config_BulletDamage()
     {
-        StartCoroutine(ActiveItems_.SelectConfig(CONSTANTS.ActiveItems_CONFIG.INCREASE_DAMAGE, methodStart_, methodBlinking_, methodEnd_, duration_, blinkingTime_));
+        StartCoroutine(ActiveItems_.SelectConfig(CONSTANTS_ENUM.ACTIVE_ITEM_CONFIG.INCREASE_DAMAGE, methodStart_, methodBlinking_, methodEnd_, duration_, blinkingTime_));
 
     }
 
-    public virtual void Configure_Item_Config_BulletHealth()
+    public virtual void Collision_Item_Config_BulletHealth()
     {
-        StartCoroutine(ActiveItems_.SelectConfig(CONSTANTS.ActiveItems_CONFIG.INCREASE_HEALTH, methodStart_, methodBlinking_, methodEnd_, duration_, blinkingTime_));
+        StartCoroutine(ActiveItems_.SelectConfig(CONSTANTS_ENUM.ACTIVE_ITEM_CONFIG.INCREASE_HEALTH, methodStart_, methodBlinking_, methodEnd_, duration_, blinkingTime_));
 
     }
 
-    public virtual void Configure_Item_Config_ChargedShot()
+    public virtual void Collision_Item_Config_ChargedShot()
     {
-        StartCoroutine(ActiveItems_.SelectConfig(CONSTANTS.ActiveItems_CONFIG.CHARGED_SHOT, methodStart_, methodBlinking_, methodEnd_, duration_, blinkingTime_));
+        StartCoroutine(ActiveItems_.SelectConfig(CONSTANTS_ENUM.ACTIVE_ITEM_CONFIG.CHARGED_SHOT, methodStart_, methodBlinking_, methodEnd_, duration_, blinkingTime_));
 
     }
 
-    public virtual void Configure_Item_Config_Dash()
+    public virtual void Collision_Item_Config_Dash()
     {
-        StartCoroutine(ActiveItems_.SelectConfig(CONSTANTS.ActiveItems_CONFIG.DASH, methodStart_, methodBlinking_, methodEnd_, duration_, blinkingTime_));
+        StartCoroutine(ActiveItems_.SelectConfig(CONSTANTS_ENUM.ACTIVE_ITEM_CONFIG.DASH, methodStart_, methodBlinking_, methodEnd_, duration_, blinkingTime_));
 
     }
 
-    public virtual void Configure_Item_Config_Frozen()
+    public virtual void Collision_Item_Config_Frozen()
     {
-        StartCoroutine(ActiveItems_.SelectConfig(CONSTANTS.ActiveItems_CONFIG.FROZEN, methodStart_, methodBlinking_, methodEnd_, duration_, blinkingTime_));
+        StartCoroutine(ActiveItems_.SelectConfig(CONSTANTS_ENUM.ACTIVE_ITEM_CONFIG.FROZEN, methodStart_, methodBlinking_, methodEnd_, duration_, blinkingTime_));
 
     }
 
-    public virtual void Configure_Item_Config_HP_Score()
+    public virtual void Collision_Item_Config_HP_Score()
     {
-        ScoreManager.instance_.ScoreIncrease(itemScore_);
+        ScoreManager.ScoreIncrease(itemScore_);
         Player_Main.instance_.player_Health_.Heal(itemHP_);
-        Record_Main.instance_.records_Controller_.HighScore();
+        Record_Controller.AddToTotalHeal(itemHP_);
+
+        Record_Controller.HighScore();
         UI_Main.instance_.UI_Health_.Update_UI();
         UI_Main.instance_.UI_Score_.Update_UI();
         item_Main_.item_Health_.Damage();
     }
 
-    public virtual void Configure_Item_Config_HP()
+    public virtual void Collision_Item_Config_HP()
     {
         Player_Main.instance_.player_Health_.Heal(itemHP_);
+        Record_Controller.AddToTotalHeal(itemHP_);
+
         UI_Main.instance_.UI_Health_.Update_UI();
         item_Main_.item_Health_.Damage();
     }
 
-    public virtual void Configure_Item_Config_Lazer()
+    public virtual void Collision_Item_Config_Lazer()
     {
-        StartCoroutine(ActiveItems_.SelectConfig(CONSTANTS.ActiveItems_CONFIG.LAZER, methodStart_, methodBlinking_, methodEnd_, duration_, blinkingTime_));
+        StartCoroutine(ActiveItems_.SelectConfig(CONSTANTS_ENUM.ACTIVE_ITEM_CONFIG.LAZER, methodStart_, methodBlinking_, methodEnd_, duration_, blinkingTime_));
 
     }
 
-    public virtual void Configure_Item_Config_Missile()
+    public virtual void Collision_Item_Config_Missile()
     {
-        StartCoroutine(ActiveItems_.SelectConfig(CONSTANTS.ActiveItems_CONFIG.MISSLE, methodStart_, methodBlinking_, methodEnd_, duration_, blinkingTime_));
+        StartCoroutine(ActiveItems_.SelectConfig(CONSTANTS_ENUM.ACTIVE_ITEM_CONFIG.MISSLE, methodStart_, methodBlinking_, methodEnd_, duration_, blinkingTime_));
 
     }
 
-    public virtual void Configure_Item_Config_Random()
+    public virtual void Collision_Item_Config_Random()
     {
         Action BackUpConditionIfFull = null;
         if (GENERIC.CoinToss(20, 80))
-            BackUpConditionIfFull = Configure_Item_Config_HP_Score;
+            BackUpConditionIfFull = Collision_Item_Config_HP_Score;
         else
         {
             if (GENERIC.CoinToss())
-                BackUpConditionIfFull = Configure_Item_Config_HP;
+                BackUpConditionIfFull = Collision_Item_Config_HP;
             else
-                BackUpConditionIfFull = Configure_Item_Config_HP_Score;
+                BackUpConditionIfFull = Collision_Item_Config_HP_Score;
         }
         StartCoroutine(ActiveItems_.SelectConfigRandom(BackUpConditionIfFull, methodStart_, methodBlinking_, methodEnd_, duration_, blinkingTime_));
     }
 
-    public virtual void Configure_Item_Config_Score()
+    public virtual void Collision_Item_Config_Score()
     {
-        ScoreManager.instance_.ScoreIncrease(itemScore_);
-        Record_Main.instance_.records_Controller_.HighScore();
+        ScoreManager.ScoreIncrease(itemScore_);
+        Record_Controller.HighScore();
         UI_Main.instance_.UI_Score_.Update_UI();
         item_Main_.item_Health_.Damage();
     }
 
-    public virtual void Configure_Item_Config_UniformSpeed()
+    public virtual void Collision_Item_Config_UniformSpeed()
     {
-        StartCoroutine(ActiveItems_.SelectConfig(CONSTANTS.ActiveItems_CONFIG.UNIFORM_SPEED, methodStart_, methodBlinking_, methodEnd_, duration_, blinkingTime_));
+        StartCoroutine(ActiveItems_.SelectConfig(CONSTANTS_ENUM.ACTIVE_ITEM_CONFIG.UNIFORM_SPEED, methodStart_, methodBlinking_, methodEnd_, duration_, blinkingTime_));
 
     }
 
+    public void Init_Values_UniformSpeed()
+    {
+        currItemConfig_ = CONSTANTS_ENUM.ITEM_TYPE.UNIFORM_SPEED;
+        methodStart_ = UI_Main.instance_.UI_Bullet_Mod_.Update_UI;
+        methodBlinking_ = UI_Main.instance_.UI_Bullet_Mod_.BlinkTextIndefinitely;
+        methodEnd_ = UI_Main.instance_.UI_Bullet_Mod_.Update_UI;
+        methodEnd_ += () => item_Main_.item_Health_.Damage();
+    }
 
+    public void Init_Values_Score()
+    {
+        currItemConfig_ = CONSTANTS_ENUM.ITEM_TYPE.SCORE;
+        itemScore_ = ScoreManager.AssignScore(CONSTANTS.DEFAULT_SCORE_EXTRA);
+    }
+
+    public void Init_Values_Random()
+    {
+        methodStart_ = UI_Main.instance_.UI_Item_.Update_UI;
+        methodStart_ += () => TriggerEvents.TriggerEvent_FrozenEnemy(true);
+        methodBlinking_ = UI_Main.instance_.UI_Item_.BlinkTextIndefinitely;
+        methodEnd_ = UI_Main.instance_.UI_Item_.StopBlinking;
+        methodEnd_ += UI_Main.instance_.UI_Item_.Update_UI;
+        methodEnd_ += () => item_Main_.item_Health_.Damage();
+        methodEnd_ += () => TriggerEvents.TriggerEvent_FrozenEnemy(false);
+
+    }
+    public void Config_Init_Missile()
+    {
+        currItemConfig_ = CONSTANTS_ENUM.ITEM_TYPE.MISSLE;
+        methodStart_ = UI_Main.instance_.UI_Bullet_Mod_.Update_UI;
+
+        methodBlinking_ = UI_Main.instance_.UI_Bullet_Mod_.BlinkTextIndefinitely;
+
+        methodEnd_ = UI_Main.instance_.UI_Bullet_Mod_.StopBlinking;
+        methodEnd_ += UI_Main.instance_.UI_Bullet_Mod_.Update_UI;
+        methodEnd_ += () => item_Main_.item_Health_.Damage();
+
+    }
+
+    public void Config_Init_Lazer()
+    {
+        currItemConfig_ = CONSTANTS_ENUM.ITEM_TYPE.LAZER;
+
+        methodStart_ = UI_Main.instance_.UI_Bullet_Mod_.Update_UI;
+
+        methodBlinking_ = UI_Main.instance_.UI_Bullet_Mod_.BlinkTextIndefinitely;
+
+        methodEnd_ = UI_Main.instance_.UI_Bullet_Mod_.StopBlinking;
+        methodEnd_ += UI_Main.instance_.UI_Bullet_Mod_.Update_UI;
+        methodEnd_ += () => item_Main_.item_Health_.Damage();
+
+    }
+
+    public void Config_Init_HP()
+    {
+        currItemConfig_ = CONSTANTS_ENUM.ITEM_TYPE.HP;
+        itemHP_ = item_Main_.item_Health_.Get_Heal();
+    }
+
+    public void Config_Init_HP_Score()
+    {
+        currItemConfig_ = CONSTANTS_ENUM.ITEM_TYPE.HP_AND_SCORE;
+        itemScore_ = ScoreManager.AssignScore();
+        itemHP_ = item_Main_.item_Health_.Get_Heal();
+    }
+
+    public void Config_Init_Frozen()
+    {
+        currItemConfig_ = CONSTANTS_ENUM.ITEM_TYPE.FROZEN;
+        methodStart_ = UI_Main.instance_.UI_Item_.Update_UI;
+        methodStart_ += () => TriggerEvents.TriggerEvent_FrozenEnemy(true);
+
+        methodBlinking_ = UI_Main.instance_.UI_Item_.BlinkTextIndefinitely;
+
+        methodEnd_ = UI_Main.instance_.UI_Item_.StopBlinking;
+        methodEnd_ += UI_Main.instance_.UI_Item_.Update_UI;
+        methodEnd_ += () => item_Main_.item_Health_.Damage();
+        methodEnd_ += () => TriggerEvents.TriggerEvent_FrozenEnemy(false);
+
+    }
+
+    public void Config_Init_Dash()
+    {
+        currItemConfig_ = CONSTANTS_ENUM.ITEM_TYPE.DASH;
+        methodStart_ = UI_Main.instance_.UI_Item_.Update_UI;
+        methodStart_ += () => Player_Main.instance_.player_Controller_.Item_Dash(15 - 3);
+
+
+        methodBlinking_ = UI_Main.instance_.UI_Item_.BlinkTextIndefinitely;
+
+        methodEnd_ = UI_Main.instance_.UI_Item_.StopBlinking;
+        methodEnd_ += UI_Main.instance_.UI_Item_.Update_UI;
+        methodEnd_ += () => item_Main_.item_Health_.Damage();
+
+    }
+
+    public void Config_Init_ChargedShot()
+    {
+        currItemConfig_ = CONSTANTS_ENUM.ITEM_TYPE.CHARGED_SHOT;
+        methodStart_ = UI_Main.instance_.UI_Bullet_Mod_.Update_UI;
+
+        methodBlinking_ = UI_Main.instance_.UI_Bullet_Mod_.BlinkTextIndefinitely;
+
+        methodEnd_ = UI_Main.instance_.UI_Bullet_Mod_.StopBlinking;
+        methodEnd_ += UI_Main.instance_.UI_Bullet_Mod_.Update_UI;
+        methodEnd_ += () => item_Main_.item_Health_.Damage();
+    }
+
+    public void Config_Init_BulletHealth()
+    {
+        currItemConfig_ = CONSTANTS_ENUM.ITEM_TYPE.INCREASE_HEALTH;
+        methodStart_ = UI_Main.instance_.UI_Bullet_Mod_.Update_UI;
+
+        methodBlinking_ = UI_Main.instance_.UI_Bullet_Mod_.BlinkTextIndefinitely;
+
+        methodEnd_ = UI_Main.instance_.UI_Bullet_Mod_.StopBlinking;
+        methodEnd_ += UI_Main.instance_.UI_Bullet_Mod_.Update_UI;
+        methodEnd_ += () => item_Main_.item_Health_.Damage();
+    }
+
+    public void Config_Init_BulletDamage()
+    {
+        currItemConfig_ = CONSTANTS_ENUM.ITEM_TYPE.INCREASE_DAMAGE;
+        methodStart_ = UI_Main.instance_.UI_Bullet_Mod_.Update_UI;
+
+        methodBlinking_ = UI_Main.instance_.UI_Bullet_Mod_.BlinkTextIndefinitely;
+
+        methodEnd_ = UI_Main.instance_.UI_Bullet_Mod_.StopBlinking;
+        methodEnd_ += UI_Main.instance_.UI_Bullet_Mod_.Update_UI;
+        methodEnd_ += () => item_Main_.item_Health_.Damage();
+
+    }
+
+    public void Config_Init_Accelarat()
+    {
+        currItemConfig_ = CONSTANTS_ENUM.ITEM_TYPE.ACCELARATE;
+        methodStart_ = UI_Main.instance_.UI_Bullet_Mod_.Update_UI;
+
+        methodBlinking_ = UI_Main.instance_.UI_Bullet_Mod_.BlinkTextIndefinitely;
+
+        methodEnd_ = UI_Main.instance_.UI_Bullet_Mod_.StopBlinking;
+        methodEnd_ += UI_Main.instance_.UI_Bullet_Mod_.Update_UI;
+
+        methodEnd_ += () => item_Main_.item_Health_.Damage();
+
+    }
 }

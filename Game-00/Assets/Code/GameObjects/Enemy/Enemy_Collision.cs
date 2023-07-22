@@ -13,51 +13,62 @@ public class Enemy_Collision : Collision
 
     public override void OnTriggerEnter2D(Collider2D other)
     {
-        if (other.gameObject.tag == CONSTANTS.Bullet_Tag)
+        if (other.tag == CONSTANTS_STRING.Bullet_Tag)
         {
             Bullet_Main bullet_Main = other.gameObject.GetComponent<Bullet_Main>();
-            if (bullet_Main == null) return;
-            RandomDamageRotate_ = UnityEngine.Random.Range(0, 360);
-            recoilRotate_ = UnityEngine.Random.Range(0, 5);
-            float bulletDamage = bullet_Main.bullet_Health_.Get_Damage();
-            enemy_Main_.enemy_Controller_.Collision_With_Bullet(bulletDamage);
-            enemy_Main_.enemy_UI_.ShowHPChange(bulletDamage);
+            if (bullet_Main != null)
+            {
+                RandomDamageRotate_ = UnityEngine.Random.Range(0, 360);
+                recoilRotate_ = UnityEngine.Random.Range(0, 5);
+                float bulletDamage = bullet_Main.bullet_Health_.Get_Damage();
+                enemy_Main_.enemy_Controller_.Collision_With_Bullet(bulletDamage);
+                StartCoroutine(enemy_Main_.enemy_UI_.ShowHPChange(bulletDamage, false));
+            }
         }
         base.OnTriggerEnter2D(other);
     }
-    public override void OnCollisionStay2D(Collision2D other)
+    public override void OnCollisionStay2D(Collision2D collision)
     {
-        if (other.gameObject.tag == CONSTANTS.Wall_Tag)
+        if (collision.gameObject.tag == CONSTANTS_STRING.Wall_Tag)
         {
-            Wall_Main wall_Main = other.gameObject.GetComponent<Wall_Main>();
+            Wall_Main wall_Main = collision.gameObject.GetComponent<Wall_Main>();
             if (wall_Main == null) return;
-            Color wallColor = wall_Main.spriterender_.color;
+            Color wallColor = wall_Main.wall_Color_.GetCurrentColor();
             enemy_Main_.enemy_Color_.SetColor(wallColor);
         }
 
-        base.OnCollisionStay2D(other);
+        base.OnCollisionStay2D(collision);
     }
     public override void Congfigure_table_OnCollisionEnter2D()
     {
-        Add(table_OnCollisionEnter2D_, CONSTANTS.Wall_Tag, enemy_Main_.enemy_Sound_.BumpIntoWall);
-        Add(table_OnCollisionEnter2D_, CONSTANTS.Player_Tag, enemy_Main_.enemy_Config_.AssignMovement);
+        if (table_OnCollisionEnter2D_ == null)
+        {
+            table_OnCollisionEnter2D_ = table_OnCollisionEnter2D_ = new Dictionary<string, Action>();
+            Add(ref table_OnCollisionEnter2D_, CONSTANTS_STRING.Wall_Tag, enemy_Main_.enemy_Sound_.BumpIntoWall);
+            Add(ref table_OnCollisionEnter2D_, CONSTANTS_STRING.Player_Tag, enemy_Main_.enemy_Config_.AssignMovement);
+        }
 
     }
 
     public override void Congfigure_table_OnTriggerEnter2D()
     {
-        Add(table_OnTriggerEnter2D_, CONSTANTS.Bullet_Tag, enemy_Main_.enemy_Color_.WhiteFlash);
-        Add(table_OnTriggerEnter2D_, CONSTANTS.Bullet_Tag, () => enemy_Main_.enemy_Health_.Damage());
-        Add(table_OnTriggerEnter2D_, CONSTANTS.Bullet_Tag, enemy_Main_.enemy_Sound_.BumpIntoWall);
-        Add(table_OnTriggerEnter2D_, CONSTANTS.Bullet_Tag, () => Spawning_Main.instance_.spawning_SFX_.Spawn_ExplosionHurt(transform.position, enemy_Main_.spriterender_.color));
-        Add(table_OnTriggerEnter2D_, CONSTANTS.Bullet_Tag, () => enemy_Main_.SideRotate(RandomDamageRotate_));
-
+        if (table_OnTriggerEnter2D_ == null)
+        {
+            table_OnTriggerEnter2D_ = new Dictionary<string, Action>();
+            Add(ref table_OnTriggerEnter2D_, CONSTANTS_STRING.Bullet_Tag, enemy_Main_.enemy_Color_.WhiteFlash);
+            Add(ref table_OnTriggerEnter2D_, CONSTANTS_STRING.Bullet_Tag, () => enemy_Main_.enemy_Health_.Damage());
+            Add(ref table_OnTriggerEnter2D_, CONSTANTS_STRING.Bullet_Tag, enemy_Main_.enemy_Sound_.BumpIntoWall);
+            Add(ref table_OnTriggerEnter2D_, CONSTANTS_STRING.Bullet_Tag, () => Spawning_Main.instance_.spawning_SFX_.Spawn_ExplosionHurt(transform.position, enemy_Main_.enemy_Color_.GetCurrentColor()));
+            Add(ref table_OnTriggerEnter2D_, CONSTANTS_STRING.Bullet_Tag, () => enemy_Main_.enemy_Controller_.SideRotate(RandomDamageRotate_));
+        }
     }
     public override void Congfigure_table_OnTriggerExit2D()
     {
-        Add(table_OnTriggerExit2D_, CONSTANTS.Bullet_Tag, () => Spawning_Main.instance_.spawning_SFX_.Spawn_ExplosionDeath(transform.position));
-        Add(table_OnTriggerExit2D_, CONSTANTS.Bullet_Tag, () => enemy_Main_.SideRotate(-RandomDamageRotate_ + recoilRotate_));
-
+        if (table_OnTriggerExit2D_ == null)
+        {
+            table_OnTriggerExit2D_ = new Dictionary<string, Action>(); Add(ref table_OnTriggerExit2D_, CONSTANTS_STRING.Bullet_Tag, () => Spawning_Main.instance_.spawning_SFX_.Spawn_ExplosionDeath(transform.position));
+            Add(ref table_OnTriggerExit2D_, CONSTANTS_STRING.Bullet_Tag, () => enemy_Main_.enemy_Controller_.SideRotate(-RandomDamageRotate_ + recoilRotate_));
+        }
 
 
     }

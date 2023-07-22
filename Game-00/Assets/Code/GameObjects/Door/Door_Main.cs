@@ -12,23 +12,34 @@ public class Door_Main : Main
     [SerializeField] public Door_Config door_Config_;
     [SerializeField] public Direction door_Direction_;
     [SerializeField] public Color_General door_Color_;
-    [SerializeField] internal Transform teleport_;
 
+    void Awake()
+    {
+        SetComponents();
+        door_Controller_.SetComponents();
+    }
     void Start()
     {
         TriggerEvents.OnGamePausedChanged += door_Controller_.EventTrigger_PauseFading;
-        FadeInOut();
-        door_Collision_.Congfigure_CollisionTables();
-        RepeatStart();
+        door_Config_.Config_Init();
+
     }
 
     void Update()
     {
 
     }
-    public override void RepeatStart()
+
+    public override void SetComponents()
     {
-        door_Config_.Config_Random();
+        door_Controller_ = GetComponent<Door_Controller>();
+        door_Collision_ = GetComponent<Collision>();
+        sound_Sound_ = GetComponent<Door_Sound>();
+        door_Move_ = GetComponent<Move>();
+        door_Health_ = GetComponent<Health>();
+        door_Config_ = GetComponent<Door_Config>();
+        door_Direction_ = GetComponent<Direction>();
+        door_Color_ = GetComponent<Color_General>();
     }
 
 }

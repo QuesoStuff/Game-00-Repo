@@ -8,14 +8,7 @@ public class Enemy_Config_Move : Enemy_Config
 
     public override void ConfigureMethods()
     {
-        methods_ = new List<Func<bool>>()
-        {
-            INPUT.instance_.Input_Move_Up,
-            INPUT.instance_.Input_Move_Down,
-            INPUT.instance_.Input_Move_Left,
-            INPUT.instance_.Input_Move_Right,
+        ConfigureMethods_Move();
 
-        };
     }
-
 }

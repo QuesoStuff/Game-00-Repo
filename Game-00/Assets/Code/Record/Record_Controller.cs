@@ -3,67 +3,63 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Record_Controller : MonoBehaviour //I_Record_Controller
+public static class Record_Controller
 {
-    [SerializeField] public Record_Main records_Main_;
-    [SerializeField] public Health target_health_;
 
-    public void TriggerPulled()
+    public static void TriggerPulled()
     {
-        int currBulletCount = records_Main_.GetBulletCount();
-        records_Main_.SetBulletCount(currBulletCount + 1);
+        int currBulletCount = Record_Main.GetBulletCount();
+        Record_Main.SetBulletCount(currBulletCount + 1);
     }
 
-    public void Traveling()
+    public static void Traveling()
     {
-        float newRecordDistance = Vector3.Distance(records_Main_.GetCurrPosition(), records_Main_.GetPrevPosition());
-        float totalDistance = records_Main_.GetDistanceTraveled();
-        records_Main_.SetDistanceTraveled(totalDistance + newRecordDistance);
+        float newRecordDistance = Vector3.Distance(Record_Main.GetCurrPosition(), Record_Main.GetPrevPosition());
+        float totalDistance = Record_Main.GetDistanceTraveled();
+        Record_Main.SetDistanceTraveled(totalDistance + newRecordDistance);
     }
 
-    public void TotalDamage()
+
+    public static void HighScore()
     {
-        float addedDamage = 0;
-        float currHP = target_health_.GetCurrHP();
-        if (currHP - CONSTANTS.HP_DEFAULT_DAMAGE > 0)
-            addedDamage = CONSTANTS.HP_DEFAULT_DAMAGE;
-        float currDamage = records_Main_.GetTotalDamage();
-        records_Main_.SetTotalDamage(currDamage + addedDamage);
+        float currScore = ScoreManager.GetScore();
+        if (currScore > Record_Main.GetHighScore())
+            Record_Main.SetHighScore(currScore);
     }
 
-    public void TotalHeal()
+    public static void KillCount()
     {
-        float addedHealth = 0;
-        float currHP = target_health_.GetCurrHP();
-        float maxHP = target_health_.GetMaxHP();
-
-        if (currHP + CONSTANTS.HP_DEFAULT_HEAL <= maxHP)
-            addedHealth = CONSTANTS.HP_DEFAULT_HEAL;
-        float currHeal = records_Main_.GetTotalHeal();
-        records_Main_.SetTotalHeal(currHeal + addedHealth);
-    }
-
-    public void HighScore()
-    {
-        float currScore = ScoreManager.instance_.GetScore();
-        if (currScore > records_Main_.GetHighScore())
-            records_Main_.SetHighScore(currScore);
-    }
-
-    public void KillCount()
-    {
-        int currKillCount = records_Main_.GetKillCount();
-        records_Main_.SetKillCount(currKillCount + 1);
+        int currKillCount = Record_Main.GetKillCount();
+        Record_Main.SetKillCount(currKillCount + 1);
 
     }
 
-    public void Time() // works for clock and timer
+    public static void Time(CONSTANTS_ENUM.TIME_MODE timeMode, CONSTANTS_ENUM.TIME_MODE currMode)
     {
-        if (Time_Manager.instance_.GetMode() == CONSTANTS.TIME_MODE.CLOCK_MODE)
+        if (timeMode == currMode)
         {
-            float runningTime = Time_Manager.instance_.GetRunningTime();
-            records_Main_.SetClockMax(runningTime);
+            float runningTime = Time_Main.GetRunningTime();
+            Record_Main.SetClockMax(runningTime);
         }
+    }
+    public static void ClockTIme()
+    {
+        Time(Time_Main.GetMode(), CONSTANTS_ENUM.TIME_MODE.CLOCK_MODE);
+    }
+    public static void TimerTime()
+    {
+        Time(Time_Main.GetMode(), CONSTANTS_ENUM.TIME_MODE.TIMER_MODE);
+    }
+
+    public static void AddToTotoalDamage(float value = CONSTANTS.DEFAULT_HP_HEAL)
+    {
+        float currDamge = Record_Main.GetTotalDamage();
+        Record_Main.SetTotalHeal(currDamge + value);
+    }
+    public static void AddToTotalHeal(float value = CONSTANTS.DEFAULT_HP_DAMAGE)
+    {
+        float currDamge = Record_Main.GetTotalHeal();
+        Record_Main.SetTotalHeal(currDamge + value);
     }
 
 }

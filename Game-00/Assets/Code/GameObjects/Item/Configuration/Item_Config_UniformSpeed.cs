@@ -6,23 +6,18 @@ public class Item_Config_UniformSpeed : Item_Config
 {
 
 
-
-    public override void Config_Init()
+    public override void Init_Values()
     {
-        ActiveItems_ = gameObject.GetComponent<ActiveItems>();
-        currItemConfig_ = CONSTANTS.ITEM_TYPE.UNIFORM_SPEED;
-        methodStart_ = UI_Main.instance_.UI_Bullet_Stat_.Update_UI;
 
-        methodBlinking_ = UI_Main.instance_.UI_Bullet_Stat_.BlinkTextIndefinitely;
+        Init_Values_UniformSpeed();
 
-        methodEnd_ = UI_Main.instance_.UI_Bullet_Stat_.Update_UI;
-        methodEnd_ += () => item_Main_.item_Health_.Damage();
 
     }
 
+
     public override void Collision_With_Player()
     {
-        Configure_Item_Config_UniformSpeed();
+        Collision_Item_Config_UniformSpeed();
     }
 
 

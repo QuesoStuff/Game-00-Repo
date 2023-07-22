@@ -2,11 +2,11 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Enemy_Controller : MonoBehaviour
+public class Enemy_Controller : Controller
 {
     [SerializeField] public Enemy_Main enemy_Main_;
 
-    public IEnumerator InvokeMovement(float timeDelay = 5)
+    public IEnumerator InvokeMovement(float timeDelay = CONSTANTS.DEFAULT_DELAY)
     {
         while (true)
         {
@@ -43,6 +43,18 @@ public class Enemy_Controller : MonoBehaviour
         else
         {
             enemy_Main_.enemy_Color_.SetColor();
+        }
+    }
+
+    public void Controller_Enemy()
+    {
+        if (ActiveItems.GetIsFrozen())
+        {
+            enemy_Main_.enemy_Color_.SetColor(Color.white);
+        }
+        else
+        {
+            enemy_Main_.enemy_Controller_.UpdateMovement();
         }
     }
 }

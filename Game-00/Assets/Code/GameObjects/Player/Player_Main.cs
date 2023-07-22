@@ -9,8 +9,7 @@ public class Player_Main : Main
     [SerializeField] public Collision player_Collision_;
     [SerializeField] public Player_Sound player_Sound_;
     [SerializeField] public Health player_Health_;
-    [SerializeField] public Move player_Move_;
-    //[SerializeField] public Position player_Position_;
+    [SerializeField] public MovePlus player_Move_;
     [SerializeField] public Direction player_Direction_;
     [SerializeField] public Color_General player_Color_;
     [SerializeField] public Player_Config player_Config_;
@@ -19,57 +18,45 @@ public class Player_Main : Main
 
     public static Player_Main instance_;
 
-    public override Vector3 Offset(Vector2 position)
-    {
-        float playerRadius = transform.localScale.magnitude / 2;
-        Vector3 offset = position.normalized * playerRadius;
-        return offset;
-    }
 
     void Awake()
     {
-        GENERIC.MakeSingleton(ref instance_, this, this.gameObject);
-        player_Health_.AddToAction_OnDeath(() => GENERIC.RestartScene());
-        player_Health_.AddToAction_OnMaxHeal(player_Sound_.FullHealth);
+        GENERIC.MakeSingleton(ref instance_, this, this.gameObject, false);
+        SetComponents();
+        player_Controller_.SetComponents();
     }
+
+
     void Start()
     {
-        player_UI_.SetComponents();
+        player_Config_.Config_Init();
 
-        player_Collision_.Congfigure_CollisionTables();
-        RepeatStart();
+
 
     }
 
     void Update()
     {
-        if (player_Move_.GetIsMoving() && GameState.instance_.GetGameState() == CONSTANTS.GAME_STATE.PLAY)
-        {
-            player_Controller_.Control();
-        }
+        player_Controller_.Controller_Player();
+        player_Controller_.Controller_Player_Dashing();
 
-        if ((player_Move_.GetIsDashing()) && INPUT.instance_.Input_Move_Any())
-        {
-            if (!isAlreadyDashing_) // we start dashing
-            {
-                isAlreadyDashing_ = true;
-                StartCoroutine(DashAndSpawn(() => Spawning_Main.instance_.spawning_SFX_.Spawn_ExplosionDeath(transform.position, spriterender_.color)));
-            }
-        }
-        else
-        {
-            isAlreadyDashing_ = false; // we stop dashing
-        }
+
     }
 
 
-    public override void RepeatStart()
+
+    public override void SetComponents()
     {
-        player_Config_.Config_Init();
-        player_Color_.SetCurrentColor(spriterender_.color);
+        player_Controller_ = GetComponent<Player_Controller>();
+        player_Collision_ = GetComponent<Collision>();
+        player_Sound_ = GetComponent<Player_Sound>();
+        player_Health_ = GetComponent<Health>();
+        player_Move_ = GetComponent<MovePlus>();
+        player_Direction_ = GetComponent<Direction>();
+        player_Color_ = GetComponent<Color_General>();
+        player_Config_ = GetComponent<Player_Config>();
+        player_UI_ = GetComponentInChildren<UI_GameObject>();
     }
-
-
 
     void FixedUpdate()
     {

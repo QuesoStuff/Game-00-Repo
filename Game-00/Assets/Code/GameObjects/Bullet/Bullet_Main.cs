@@ -7,106 +7,42 @@ public class Bullet_Main : Main
     [SerializeField] public Bullet_Controller bullet_Controller_;
     [SerializeField] public Collision bullet_Collision_;
     [SerializeField] public Bullet_Sound Bullet_Sound_;
-    [SerializeField] public Move bullet_Move_;
+    [SerializeField] public MovePlus bullet_Move_;
     [SerializeField] public Health bullet_Health_;
     [SerializeField] public Bullet_Config bullet_Config_;
     [SerializeField] public Direction bullet_Direction_;
     [SerializeField] public Color_General bullet_Color_;
 
-
-    public static GameObject Static_Create(Vector3 position, Quaternion rotation, Vector3 directoin, GameObject prefab, bool IsSoloCharged = false)
+    public static GameObject Static_Create(Vector3 position, Quaternion rotation, Vector3 direction, GameObject prefab, bool IsSoloCharged = false)
     {
         GameObject bulletInstance = null;
-        if (Bullet_Config.LimitBullet(IsSoloCharged))
-        {
-            bulletInstance = Instantiate(prefab, position, rotation);
-            Bullet_Main bullet = bulletInstance.GetComponent<Bullet_Main>();
-            bullet.Init(directoin, IsSoloCharged);
-        }
+
+        bulletInstance = Instantiate(prefab, position, rotation);
+        Bullet_Config bullet_Config = bulletInstance.GetComponent<Bullet_Config>();
+        bullet_Config.ConfigureBullet(direction, IsSoloCharged);
+
         return bulletInstance;
     }
 
 
-    public void Init(Vector2 direction, bool IsSoloCharged = false)
-    {
-        if (direction == Vector2.zero)
-            direction = Direction.GenerateRandomDirection();
-        bullet_Move_.Set(direction);
-        bullet_Direction_.SetDirection();
-        bullet_Direction_.StartingRotation();
-
-        this.DelayMethod(4 * CONSTANTS.DEFSULT_BULLET_LIFE, FakeKill);
-        bullet_Health_.AddToAction_OnDeath(() => FakeKill());
-        bullet_Health_.AddToAction_OnDeath(() => Bullet_Config.SetBulletCount(Bullet_Config.GetBulletCount() - 1));
-
-
-        Bullet_Config.SetBulletCount(Bullet_Config.GetBulletCount() + 1);
-        bullet_Color_.color_Range_ = new ColorRange(Color.green, Color.red, 5);
-        Bullet_Config.colorRange_ = new CollectionRange<int, Color>(new List<int> { 1, 3, 7, 11 }, bullet_Color_.color_Range_.GetColors());
-        Bullet_Config.speedRange_ = new CollectionRange<int, float>(new List<int> { 1, 3, 7, 11 }, new List<float> { 5f, 1, 0.5f, 0.25f });
-        bullet_Collision_.Congfigure_CollisionTables();
-        bullet_Controller_.Bullet_Configuration(IsSoloCharged);
-        bullet_Config_.Bullet_Speed();
-        bullet_Config_.BulletColor();
-        bullet_Color_.SetCurrentColor(spriterender_.color);
-        bullet_Config_.BulletConfigurate_Audio(IsSoloCharged);
-        bullet_Move_.Set(bullet_Config_.GetCurrBulletSpeedMod());
-        bullet_Move_.Set_AccelerateSpeed(bullet_Config_.GetCurrBulletAccelerate());
-
-    }
-
-    public override Vector3 Offset(Vector2 direction)
-    {
-        // Assuming the scale is uniform, use x or y size of the sprite's bounds as the "radius"
-        float bulletRadius = spriterender_.sprite.bounds.size.x * transform.localScale.x / 2;
-        Vector3 offset = direction.normalized * bulletRadius;
-        return offset;
-    }
 
     void OnBecameInvisible()
     {
-        this.DelayMethod(CONSTANTS.DEFSULT_BULLET_LIFE, FakeKill);
+        this.DelayMethod(CONSTANTS.DEFAULT_OFFSCREEN_BULLET_LIFETIME_ADJUSTMENT, bullet_Config_.Config_OnDeath);
+    }
+    void Awake()
+    {
+        SetComponents();
+        bullet_Controller_.SetComponents();
     }
     void Update()
     {
-        if (ActiveItems.GetIsTypeMissle())
-        {
-            bullet_Controller_.Bullet_Missle_Controls();
-        }
-        if (ActiveItems.GetIsStatUniformSpeed())
-        {
-            bullet_Config_.BulletConfigurate_Extra_UniformSpeed();
-        }
-        if (bullet_Config_.GetStillCharging())
-        {
-            Vector3 offset = Offset(-bullet_Direction_.GetDirection());
-            Spawning_Main.instance_.spawning_SFX_.Spawn_ExplosionHurt(transform.position + offset, spriterender_.color);
+        bullet_Controller_.Controller_Missile();
 
-            // we start spawning
-            if (!isAlreadyDashing_) // we start spawning
-            {
-                isAlreadyDashing_ = true;
-                StartCoroutine(DashAndSpawn(() =>
-                {
-                    Vector3 offset = Offset(-bullet_Direction_.GetDirection());
-                    Spawning_Main.instance_.spawning_SFX_.Spawn_ExplosionHurt(transform.position + offset, spriterender_.color);
-                }));
-            }
-        }
-        else
-        {
-            isAlreadyDashing_ = false; // we stop spawning
-        }
-        if (bullet_Config_.GetDoneCharging())
-        {
-            if (ActiveItems.GetIsTypeLazer())
-            {
-                Vector3 offset = Offset(-bullet_Direction_.GetDirection());
-                Spawning_Main.instance_.spawning_SFX_.Spawn_ExplosionHurt(transform.position + offset, spriterender_.color);
-            }
-            else
-                Spawning_Main.instance_.spawning_SFX_.Spawn_ExplosionDeath(transform.position, spriterender_.color);
-        }
+        bullet_Controller_.Controller_Uniform();
+
+        bullet_Controller_.Controller_ChargingBullet();
+
     }
 
     void FixedUpdate()
@@ -114,8 +50,18 @@ public class Bullet_Main : Main
         bullet_Move_.Moving();
         bullet_Move_.Moving_Accelarate();
     }
-    void OnDestroy()
+
+
+
+    public override void SetComponents()
     {
-        Bullet_Config.SetBulletCount(Bullet_Config.GetBulletCount() - 1);
+        bullet_Controller_ = GetComponent<Bullet_Controller>();
+        bullet_Collision_ = GetComponent<Collision>();
+        Bullet_Sound_ = GetComponent<Bullet_Sound>();
+        bullet_Move_ = GetComponent<MovePlus>();
+        bullet_Health_ = GetComponent<Health>();
+        bullet_Config_ = GetComponent<Bullet_Config>();
+        bullet_Direction_ = GetComponent<Direction>();
+        bullet_Color_ = GetComponent<Color_General>();
     }
 }

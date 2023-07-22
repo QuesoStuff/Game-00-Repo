@@ -2,17 +2,13 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class PrevFile : MonoBehaviour
+public static class PrevFile
 {
-    public static PrevFile instance_;
-    private FileData highestRecord_;
+    private static FileData highestRecord_;
 
-    private void Awake()
-    {
-        GENERIC.MakeSingleton(ref instance_, this, this.gameObject);
-    }
 
-    public void LoadFile()
+
+    public static void LoadFile()
     {
         highestRecord_ = Load_Save.LoadFileData();
         if (highestRecord_ == null)
@@ -21,43 +17,43 @@ public class PrevFile : MonoBehaviour
         }
     }
 
-    public bool CompareDistanceTraveled()
+    public static bool CompareDistanceTraveled()
     {
-        return Record_Main.instance_.GetDistanceTraveled() > highestRecord_.DistanceTraveled_;
+        return Record_Main.GetDistanceTraveled() > highestRecord_.DistanceTraveled_;
     }
 
-    public bool CompareBulletCount()
+    public static bool CompareBulletCount()
     {
-        return Record_Main.instance_.GetBulletCount() > highestRecord_.BulletCount_;
+        return Record_Main.GetBulletCount() > highestRecord_.BulletCount_;
     }
 
-    public bool CompareKillCount()
+    static public bool CompareKillCount()
     {
-        return Record_Main.instance_.GetKillCount() > highestRecord_.KillCount_;
+        return Record_Main.GetKillCount() > highestRecord_.KillCount_;
     }
 
-    public bool CompareTotalDamage()
+    static public bool CompareTotalDamage()
     {
-        return Record_Main.instance_.GetTotalDamage() > highestRecord_.TotalDamage_;
+        return Record_Main.GetTotalDamage() > highestRecord_.TotalDamage_;
     }
 
-    public bool CompareTotalHeal()
+    static public bool CompareTotalHeal()
     {
-        return Record_Main.instance_.GetTotalHeal() > highestRecord_.TotalHeal_;
+        return Record_Main.GetTotalHeal() > highestRecord_.TotalHeal_;
     }
 
-    public bool CompareHighScore()
+    static public bool CompareHighScore()
     {
-        return Record_Main.instance_.GetHighScore() > highestRecord_.HighScore_;
+        return Record_Main.GetHighScore() > highestRecord_.HighScore_;
     }
 
-    public bool CompareTimerTime()
+    static public bool CompareTimerTime()
     {
-        return Record_Main.instance_.GetTimerMax() < highestRecord_.TimerTimeMax_;
+        return Record_Main.GetTimerMax() < highestRecord_.TimerTimeMax_;
     }
 
-    public bool CompareClockTime()
+    static public bool CompareClockTime()
     {
-        return Record_Main.instance_.GetClockMax() > highestRecord_.ClockTImeMax_;
+        return Record_Main.GetClockMax() > highestRecord_.ClockTImeMax_;
     }
 }

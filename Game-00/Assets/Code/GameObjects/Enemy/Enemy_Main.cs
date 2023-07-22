@@ -7,7 +7,7 @@ public class Enemy_Main : Main
     [SerializeField] public Enemy_Controller enemy_Controller_;
     [SerializeField] public Collision enemy_Collision_;
     [SerializeField] public Enemy_Sound enemy_Sound_;
-    [SerializeField] public Move enemy_Move_;
+    [SerializeField] public MovePlus enemy_Move_;
     [SerializeField] public Health enemy_Health_;
     [SerializeField] public Enemy_Config enemy_Config_;
     [SerializeField] public Direction enemy_Direction_;
@@ -17,51 +17,22 @@ public class Enemy_Main : Main
 
 
 
-    private void Awake()
+    void Awake()
     {
-
-    }
-    public override void RepeatStart()
-    {
-        enemy_Config_.ConfigureMethods();
-        enemy_Health_.Set_Random_Health();
-        enemy_Move_.Set_Random_Speed();
-        enemy_Config_.AssignMovement();
-        enemy_Config_.Config_Color();
-        StartCoroutine(enemy_Controller_.InvokeMovement());
-
+        enemy_Controller_.SetComponents();
+        SetComponents();
     }
     void Start()
     {
-
-
-
-
-        enemy_Health_.AddToAction_OnDeath(() => Spawning_Main.instance_.spawning_SFX_.Spawn_ExplosionDeath(transform.position, spriterender_.color));
-        enemy_Health_.AddToAction_OnDeath(() => FakeKill());
-        enemy_Health_.AddToAction_OnDeath(Record_Main.instance_.records_Controller_.KillCount);
-        enemy_Health_.AddToAction_OnDeath(UI_Main.instance_.UI_KillCount_.Update_UI);
-        enemy_Health_.AddToAction_OnDeath(ScoreManager.instance_.ScoreIncrease);
-        enemy_Health_.AddToAction_OnDeath(UI_Main.instance_.UI_Score_.Update_UI);
-
-
-        enemy_Collision_.Congfigure_CollisionTables();
         TriggerEvents.OnGameFrozenChanged += enemy_Controller_.EventTrigger_FrozenEnemyColor;
-        RepeatStart();
+        enemy_Config_.Config_Init();
     }
 
 
     void Update()
     {
 
-        if (ActiveItems.GetIsFrozen())
-        {
-            enemy_Color_.SetColor(Color.white);
-        }
-        else
-        {
-            enemy_Controller_.UpdateMovement();
-        }
+        enemy_Controller_.Controller_Enemy();
 
 
     }
@@ -76,6 +47,17 @@ public class Enemy_Main : Main
         else
             enemy_Move_.StopMoving();
     }
-
+    public override void SetComponents()
+    {
+        enemy_Controller_ = GetComponent<Enemy_Controller>();
+        enemy_Collision_ = GetComponent<Collision>();
+        enemy_Sound_ = GetComponent<Enemy_Sound>();
+        enemy_Move_ = GetComponent<MovePlus>();
+        enemy_Health_ = GetComponent<Health>();
+        enemy_Config_ = GetComponent<Enemy_Config>();
+        enemy_Direction_ = GetComponent<Direction>();
+        enemy_Color_ = GetComponent<Color_General>();
+        enemy_UI_ = GetComponentInChildren<UI_GameObject>();
+    }
 
 }

@@ -5,18 +5,16 @@ using UnityEngine;
 public class Item_Config_HP : Item_Config
 {
 
-
-
-    public override void Config_Init()
+    public override void Init_Values()
     {
-        currItemConfig_ = CONSTANTS.ITEM_TYPE.HP;
-        itemHP_ = item_Main_.item_Health_.Get_Heal();
-
+        Config_Init_HP();
     }
+
+
 
     public override void Collision_With_Player()
     {
-        Configure_Item_Config_HP();
+        Collision_Item_Config_HP();
     }
 
 

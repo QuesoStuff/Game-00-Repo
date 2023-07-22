@@ -8,33 +8,27 @@ public class Wall_Main : Main
     [SerializeField] public Wall_Controller wall_Controller_;
     [SerializeField] public Collision wall_Collision_;
     [SerializeField] public Wall_Sound wall_Sound_;
-    [SerializeField] public Move wall_Move_;
+    [SerializeField] public MovePlus wall_Move_;
     [SerializeField] public Health wall_Health_;
     [SerializeField] public Wall_Config wall_Config_;
     [SerializeField] public Direction wall_Direction_;
     [SerializeField] public Color_General wall_Color_;
 
 
-    public override void RepeatStart()
-    {
 
-        wall_Config_.Config_Init();
-        wall_Controller_.ConfigureWall();
-        wall_Color_.SetCurrentColor(spriterender_.color);
-
-    }
 
     void Awake()
     {
+        wall_Config_.Config_Init();
 
-
+        wall_Controller_.SetComponents();
+        SetComponents();
     }
+
     void Start()
     {
-        RepeatStart();
-        wall_Collision_.Congfigure_CollisionTables();
-        wall_Health_.AddToAction_OnDeath(() => Spawning_Main.instance_.spawning_SFX_.Spawn_ExplosionDeath(transform.position, spriterender_.color));
-        wall_Health_.AddToAction_OnDeath(() => FakeKill());
+        //wall_Config_.Config_Init();
+
     }
     void Update()
     {
@@ -51,5 +45,15 @@ public class Wall_Main : Main
         }
 
     }
-
+    public override void SetComponents()
+    {
+        wall_Controller_ = GetComponent<Wall_Controller>();
+        wall_Collision_ = GetComponent<Collision>();
+        wall_Sound_ = GetComponent<Wall_Sound>();
+        wall_Move_ = GetComponent<MovePlus>();
+        wall_Health_ = GetComponent<Health>();
+        wall_Config_ = GetComponent<Wall_Config>();
+        wall_Direction_ = GetComponent<Direction>();
+        wall_Color_ = GetComponent<Color_General>();
+    }
 }

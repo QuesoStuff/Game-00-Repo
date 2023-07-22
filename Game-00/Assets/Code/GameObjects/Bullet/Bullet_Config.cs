@@ -1,14 +1,22 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using System.Linq;
+using System;
 
-public class Bullet_Config : MonoBehaviour
+public class Bullet_Config : Config
 {
     [SerializeField] public Bullet_Main bullet_Main_;
-    [SerializeField] private static float static_shared_Speed_;
-    [SerializeField] private static float static_shared_accelarate_;
+    [SerializeField] public static float static_shared_Speed_;
+    [SerializeField] public static float static_shared_accelarate_;
 
+    protected float configHP_;
+    protected float configDamage_;
+    protected float configSPeed_;
+    protected float configAcc_;
+    protected Color startColor_;
+    [SerializeField] private float sizeScale_;
+    [SerializeField] private float sizeDuration_;
+    [SerializeField] private float lazerLength_;
     private bool is_Type_Still_Charged_;
     private bool doneCharging_;
     private static int ActiveItemsBulletCount_;
@@ -16,52 +24,37 @@ public class Bullet_Config : MonoBehaviour
     public static CollectionRange<int, Color> colorRange_;
     public static CollectionRange<int, float> speedRange_;
 
-    private float currBulletSpeed_;
-    private float currBulletSpeed_Mod;
-    private float currBulletAccelerate_;
-    private float currBulletAccelerate_Mod;
+    private float configBulletSpeed_;
+    private float configBulletAccelerate_;
 
-
+    public override void Config_Init()
+    {
+        throw new System.NotImplementedException();
+    }
 
 
     public float GetCurrBulletSpeed()
     {
-        return currBulletSpeed_;
+        return configBulletSpeed_;
     }
 
-    public void SetCurrBulletSpeed(float currBulletSpeed)
+    public void SetCurrBulletSpeed(float configBulletSpeed)
     {
-        currBulletSpeed_ = currBulletSpeed;
+        configBulletSpeed_ = configBulletSpeed;
     }
 
-    public float GetCurrBulletSpeedMod()
-    {
-        return currBulletSpeed_Mod;
-    }
 
-    public void SetCurrBulletSpeedMod(float currBulletSpeedMod)
-    {
-        currBulletSpeed_Mod = currBulletSpeedMod;
-    }
     public float GetCurrBulletAccelerate()
     {
-        return currBulletAccelerate_;
+        return configBulletAccelerate_;
     }
 
-    public void SetCurrBulletAccelerate(float currBulletAccelerate)
+    public void SetCurrBulletAccelerate(float configBulletAccelerate)
     {
-        currBulletAccelerate_ = currBulletAccelerate;
+        configBulletAccelerate_ = configBulletAccelerate;
     }
 
-    public float GetCurrBulletAccelerateMod()
-    {
-        return currBulletAccelerate_Mod;
-    }
 
-    public void SetCurrBulletAccelerateMod(float currBulletAccelerateMod)
-    {
-        currBulletAccelerate_Mod = currBulletAccelerateMod;
-    }
 
 
     public static bool LimitBullet(bool IsSoloCharged = false)
@@ -69,7 +62,6 @@ public class Bullet_Config : MonoBehaviour
         bool totalCount = GENERIC.CheckLimit<int>(() => true, ActiveItemsBulletCount_, maxBulletCount);
         bool missile = GENERIC.CheckLimit<int>(() => ActiveItems.GetIsTypeMissle(), ActiveItemsBulletCount_, 2);
         bool chargedShot = GENERIC.CheckLimit<int>(() => ActiveItems.GetIsTypeCharged(), ActiveItemsBulletCount_, 3);
-
         bool valid = totalCount && missile && chargedShot;
         return valid;
     }
@@ -90,7 +82,6 @@ public class Bullet_Config : MonoBehaviour
     public static void SetBulletCount(int newCOunt)
     {
         ActiveItemsBulletCount_ = newCOunt;
-        UI_Main.instance_.UI_Debug_.Update_UI_Text(ActiveItemsBulletCount_);
     }
     public static int GetBulletCount()
     {
@@ -117,7 +108,7 @@ public class Bullet_Config : MonoBehaviour
     {
         is_Type_Still_Charged_ = true;
         doneCharging_ = false;
-        Spawning_Main.instance_.spawning_SFX_.Spawn_ExplosionDash(bullet_Main_.transform.position, bullet_Main_.spriterender_.color);
+        Spawning_Main.instance_.spawning_SFX_.Spawn_ExplosionDash(transform.position, bullet_Main_.bullet_Color_.GetCurrentColor());
         yield return GENERIC.ScaleOverTime(this, this.gameObject, Vector3.zero, targetScale, duration);
         is_Type_Still_Charged_ = false;
         doneCharging_ = true;
@@ -125,19 +116,17 @@ public class Bullet_Config : MonoBehaviour
 
     public float Bullet_Speed()
     {
-        float speed = currBulletSpeed_;
-        currBulletSpeed_Mod = speed * speedRange_.GetResultBasedOnThreshold(ActiveItemsBulletCount_);
-        static_shared_Speed_ = currBulletSpeed_Mod;
-        static_shared_accelarate_ = currBulletAccelerate_;
-        return currBulletSpeed_Mod;
+        float speed = configBulletSpeed_;
+        speed = speed * speedRange_.GetResultBasedOnThreshold(ActiveItemsBulletCount_);
+        static_shared_Speed_ = speed;
+        static_shared_accelarate_ = configBulletAccelerate_;
+        return speed;
     }
 
     public Color BulletColor()
     {
         Color bulletColor = colorRange_.GetResultBasedOnThreshold(ActiveItemsBulletCount_);
         bulletColor = GENERIC.ChangeOpacity(bulletColor, 1 - (float)ActiveItemsBulletCount_ / maxBulletCount);
-        bullet_Main_.bullet_Color_.SetCurrentColor(bulletColor);
-        bullet_Main_.bullet_Color_.SetColor();
         return bulletColor;
     }
 
@@ -145,40 +134,37 @@ public class Bullet_Config : MonoBehaviour
 
     public void BulletConfigurate_Lazer()
     {
-        float currDamage = bullet_Main_.bullet_Health_.Get_Damage();
-        float currHP = bullet_Main_.bullet_Health_.GetCurrHP();
-
-        bullet_Main_.bullet_Health_.Set_Damage(currDamage / 2);
-        currBulletSpeed_ *= 2;
-        bullet_Main_.bullet_Health_.Set_HP(2 * currHP);
+        configDamage_ /= 2;
+        configBulletSpeed_ *= 2;
 
     }
     public void BulletConfigurate_ChargedShot()
     {
-        float currHP = bullet_Main_.bullet_Health_.GetCurrHP();
-        bullet_Main_.bullet_Health_.Set_HP(currHP + 2);
-        float currDamage = bullet_Main_.bullet_Health_.Get_Damage();
-        bullet_Main_.bullet_Health_.Set_Damage(5 * currDamage);
-        currBulletSpeed_ /= 2;
-        currBulletAccelerate_ = currBulletSpeed_ / 2;
+        configDamage_ *= 5; ;
+        configHP_ += 2;
+        configBulletSpeed_ /= 2;
+        configBulletAccelerate_ = configBulletSpeed_ / 2;
     }
     public void BulletConfigurate_MIssile()
     {
-        float currDamage = bullet_Main_.bullet_Health_.Get_Damage();
-        bullet_Main_.bullet_Health_.Set_Damage(currDamage / 2);
-        currBulletSpeed_ *= 3;
-        currBulletAccelerate_ = currBulletSpeed_ / 10;
+        configDamage_ /= 2;
+        configBulletSpeed_ *= 3;
+        configBulletAccelerate_ = configBulletSpeed_ / 10;
     }
 
 
-
+    public override void Revive()
+    {
+        bullet_Main_.bullet_Controller_.Revive();
+    }
 
     public void BulletConfigurate_General(bool IsSoloCharged = false)
     {
-        bullet_Main_.bullet_Health_.Set_HP(1);
-        bullet_Main_.bullet_Health_.Set_Damage(1);
-        currBulletSpeed_ = 15;
-        currBulletAccelerate_ = 0;
+        configHP_ = CONSTANTS.DEFAULT_BULLET_STARTER_HEALTH;
+        configDamage_ = CONSTANTS.DEFAULT_HP_DAMAGE;
+
+        configBulletSpeed_ = CONSTANTS.DEFAULT_BULLET_SPEED;
+        configBulletAccelerate_ = CONSTANTS.DEFAULT_SPEED_ACC;
     }
     public void BulletConfigurate_Audio(bool IsSoloCharged = false)
     {
@@ -191,25 +177,123 @@ public class Bullet_Config : MonoBehaviour
     }
     public void BulletConfigurate_Extra_Accelerate(float addedAcc = 5)
     {
-        currBulletAccelerate_ += addedAcc;
+        configBulletAccelerate_ += addedAcc;
     }
     public void BulletConfigurate_Extra_UniformSpeed()
     {
         BulletColor();
-        Bullet_Speed();
+        static_shared_Speed_ = Bullet_Speed();
         bullet_Main_.bullet_Move_.Set_AccelerateSpeed(static_shared_accelarate_);
         bullet_Main_.bullet_Move_.Set(static_shared_Speed_);
     }
     public void BulletConfigurate_Extra_IncreasedHP(float extraHP = 2)
     {
-        float currHP = bullet_Main_.bullet_Health_.GetCurrHP();
-        bullet_Main_.bullet_Health_.Set_HP(currHP + extraHP);
+        configHP_ += extraHP;
     }
     public void BulletConfigurate_Extra_IncreasedDamage(float extraDamage = 3)
     {
-        float currDamage = bullet_Main_.bullet_Health_.Get_Damage();
-        bullet_Main_.bullet_Health_.Set_Damage(currDamage + extraDamage);
+        configDamage_ += extraDamage;
     }
+    public override void Config_OnDeath()
+    {
+        OnDeath_ = () =>
+{
+    ActiveItemsBulletCount_--;
+    UI_Main.instance_.UI_Debug_.Update_UI_Text(ActiveItemsBulletCount_);
+    bullet_Main_.bullet_Controller_.FakeKill();
+};
+    }
+    public override void Init_Values()
+    {
+        throw new System.NotImplementedException();
+    }
+    public void ConfigureBullet(Vector2 direction, bool IsSoloCharged = false)
+    {
+        if (direction == Vector2.zero)
+            direction = Direction.GenerateRandomDirection();
+        ActiveItemsBulletCount_++;
+        bullet_Main_.bullet_Move_.Set(direction);
+        bullet_Main_.bullet_Direction_.SetDirection();
+        bullet_Main_.bullet_Direction_.StartingRotation();
+        bullet_Main_.bullet_Collision_.Congfigure_table_OnTriggerEnter2D();
+        bullet_Main_.bullet_Collision_.Congfigure_table_OnTriggerStay2D();
+        Config_OnDeath();
+        bullet_Main_.bullet_Controller_.DelayMethod(CONSTANTS.DEFSULT_BULLET_LIFETIME, OnDeath_);
+        bullet_Main_.bullet_Health_.AddToAction_OnDeath(OnDeath_);
+        bullet_Main_.bullet_Color_.color_Range_ = new ColorRange(CONSTANTS_COLOR.DEFAULT_BULLET_COLOR_1, CONSTANTS_COLOR.DEFAULT_BULLET_COLOR_2, 5);
+        colorRange_ = new CollectionRange<int, Color>(new List<int> { 1, 3, 7, 11 }, bullet_Main_.bullet_Color_.color_Range_.GetColors());
+        speedRange_ = new CollectionRange<int, float>(new List<int> { 1, 3, 7, 11 }, new List<float> { 5f, 1, 0.5f, 0.25f });
+        Bullet_Configuration(IsSoloCharged);
+        float curSpeed = Bullet_Speed();
+        startColor_ = BulletColor();
+        BulletConfigurate_Audio(IsSoloCharged);
+        bullet_Main_.bullet_Color_.SetCurrentColor_SetColor(Color.white);
+        bullet_Main_.bullet_Move_.Set(curSpeed);
+        bullet_Main_.bullet_Move_.Set_AccelerateSpeed(configAcc_);
+        bullet_Main_.bullet_Health_.Set_HP(configHP_);
+        bullet_Main_.bullet_Health_.Set_Damage(configDamage_);
+    }
+
+
+    public void Bullet_Configuration_Stat()
+    {
+        if (ActiveItems.GetIsStatAccelerate())
+        {
+            BulletConfigurate_Extra_Accelerate();
+        }
+        if (ActiveItems.GetIsStatIncreasedDamage())
+        {
+            BulletConfigurate_Extra_IncreasedDamage();
+        }
+        if (ActiveItems.GetIsStatIncreaseHealth())
+        {
+            BulletConfigurate_Extra_IncreasedHP();
+        }
+        if (ActiveItems.GetIsStatUniformSpeed())
+        {
+            BulletConfigurate_Extra_UniformSpeed();
+        }
+
+    }
+    public void Bullet_Configuration_Type(bool IsSoloCharged = false)
+    {
+        if (ActiveItems.GetIsTypeCharged() || IsSoloCharged)
+        {
+            BulletConfigurate_ChargedShot();
+            Config_ChargedShot(transform.localScale * sizeScale_, sizeDuration_);
+            if (!ActiveItems.GetIsTypeLazer())
+                bullet_Main_.bullet_Controller_.ChangeSprite();
+        }
+        if (ActiveItems.GetIsTypeLazer())
+        {
+            BulletConfigurate_Lazer();
+            Config_Lazer(lazerLength_);
+        }
+        if (ActiveItems.GetIsTypeMissle())
+        {
+            BulletConfigurate_MIssile();
+        }
+    }
+
+    public void Bullet_Configuration(bool IsSoloCharged = false)
+    {
+        BulletConfigurate_General();
+        Bullet_Configuration_Type(IsSoloCharged);
+        Bullet_Configuration_Stat();
+        bullet_Normal_Bullet(IsSoloCharged);
+    }
+
+
+    public void bullet_Normal_Bullet(bool IsSoloCharged = false)
+    {
+        if (ActiveItems.GetIsEmpty() || IsSoloCharged)
+        {
+            if (GENERIC.CoinToss(20, 80))
+                configHP_ = CONSTANTS.DEFAULT_BULLET_STARTER_HEALTH_PLUS;
+        }
+    }
+
+
 }
 
 

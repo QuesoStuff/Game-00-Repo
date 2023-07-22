@@ -1,121 +1,115 @@
 using UnityEngine;
 
-public class Record_Main : MonoBehaviour
+public static class Record_Main
 {
-    private float distanceTraveled_;
-    private int bulletCount_;
-    private int killCount_;
-    private float totalDamage_;
-    private float totalHeal_;
-    private float high_Score_;
-    private float clockTime_Max_;
-    private float timerTime_Max_;
-    [SerializeField] public Record_Controller records_Controller_;
-    [SerializeField] private Transform target_;
-    public Vector3 target_CurrPosition_;
-    public Vector3 target_PrevPosition_;
-
-    [SerializeField] public Record_Main records_Main_;
-    [SerializeField] public Health target_health_;
-    public static Record_Main instance_;
-    public void SetClockMax(float newTIme)
+    private static float distanceTraveled_;
+    private static int bulletCount_;
+    private static int killCount_;
+    private static float totalDamage_;
+    private static float totalHeal_;
+    private static float high_Score_;
+    private static float clockTime_Max_;
+    private static float timerTime_Max_;
+    private static Transform target_ = Player_Main.instance_.transform;
+    private static Vector3 target_CurrPosition_;
+    private static Vector3 target_PrevPosition_;
+    public static void SetClockMax(float newTIme)
     {
         clockTime_Max_ = newTIme;
     }
-    public void SetTimerMax(float newTIme)
+    public static void SetTimerMax(float newTIme)
     {
         timerTime_Max_ = newTIme;
     }
 
-    public float GetClockMax()
+    public static float GetClockMax()
     {
         return clockTime_Max_;
     }
-    public float GetTimerMax()
+    public static float GetTimerMax()
     {
         return timerTime_Max_;
     }
-    public Vector3 GetCurrPosition()
+    public static Vector3 GetCurrPosition()
     {
         return target_CurrPosition_;
     }
-    public Vector3 GetPrevPosition()
+    public static Vector3 GetPrevPosition()
     {
         return target_PrevPosition_;
     }
-    private void Awake()
-    {
-        GENERIC.MakeSingleton(ref instance_, this, this.gameObject);
-    }
 
-    public void UpdateDistanceTraveled()
+
+    public static void UpdateDistanceTraveled()
     {
         target_PrevPosition_ = target_CurrPosition_;
         target_CurrPosition_ = target_.position;
-        records_Controller_.Traveling();
+        Record_Controller.Traveling();
     }
 
-    public void UpdateBulletCount()
+    public static void UpdateBulletCount()
     {
-        records_Controller_.TriggerPulled();
+        Record_Controller.TriggerPulled();
     }
 
-    public float GetDistanceTraveled()
+    public static float GetDistanceTraveled()
     {
         return distanceTraveled_;
     }
 
-    public void SetDistanceTraveled(float newDistanceTraveled)
+    public static void SetDistanceTraveled(float newDistanceTraveled)
     {
         distanceTraveled_ = newDistanceTraveled;
     }
 
-    public int GetBulletCount()
+    public static int GetBulletCount()
     {
         return bulletCount_;
     }
 
-    public void SetBulletCount(int newCount)
+    public static void SetBulletCount(int newCount)
     {
         bulletCount_ = newCount;
     }
 
-    public int GetKillCount()
+    public static int GetKillCount()
     {
         return killCount_;
     }
 
-    public void SetKillCount(int newCount)
+    public static void SetKillCount(int newCount)
     {
         killCount_ = newCount;
     }
 
-    public float GetTotalDamage()
+    public static float GetTotalDamage()
     {
         return totalDamage_;
     }
 
-    public void SetTotalDamage(float value)
+    public static void SetTotalDamage(float value)
     {
         totalDamage_ = value;
     }
 
-    public float GetTotalHeal()
+
+    public static float GetTotalHeal()
     {
         return totalHeal_;
     }
 
-    public void SetTotalHeal(float value)
+    public static void SetTotalHeal(float value)
     {
         totalHeal_ = value;
     }
 
-    public float GetHighScore()
+
+    public static float GetHighScore()
     {
         return high_Score_;
     }
 
-    public void SetHighScore(float newScore)
+    public static void SetHighScore(float newScore)
     {
         high_Score_ = newScore;
     }

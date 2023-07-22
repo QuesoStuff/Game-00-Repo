@@ -6,24 +6,15 @@ public class Item_Config_BulletHealth : Item_Config
 {
 
 
-
-    public override void Config_Init()
+    public override void Init_Values()
     {
-        ActiveItems_ = gameObject.GetComponent<ActiveItems>();
-        currItemConfig_ = CONSTANTS.ITEM_TYPE.INCREASE_HEALTH;
-        methodStart_ = UI_Main.instance_.UI_Bullet_Stat_.Update_UI;
-
-        methodBlinking_ = UI_Main.instance_.UI_Bullet_Stat_.BlinkTextIndefinitely;
-
-        methodEnd_ = UI_Main.instance_.UI_Bullet_Stat_.StopBlinking;
-        methodEnd_ += UI_Main.instance_.UI_Bullet_Stat_.Update_UI;
-        methodEnd_ += () => item_Main_.item_Health_.Damage();
-
+        Config_Init_BulletHealth();
     }
+
 
     public override void Collision_With_Player()
     {
-        Configure_Item_Config_BulletHealth();
+        Collision_Item_Config_BulletHealth();
     }
 
 

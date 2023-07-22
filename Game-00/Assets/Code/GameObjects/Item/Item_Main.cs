@@ -9,7 +9,7 @@ public class Item_Main : Main
     [SerializeField] public Item_Controller item_Controller_;
     [SerializeField] public Collision item_Collision_;
     [SerializeField] public Item_Sound item_Sound_;
-    [SerializeField] public Move item_Move_;
+    [SerializeField] public MovePlus item_Move_;
     [SerializeField] public Health item_Health_;
     [SerializeField] public Item_Config item_Config_;
     [SerializeField] public Direction item_Direction_;
@@ -20,32 +20,31 @@ public class Item_Main : Main
 
     void Awake()
     {
+        item_Controller_.SetComponents();
+        SetComponents();
     }
 
-    public override void RepeatStart()
-    {
-
-        ConfigStartRotate();
-        ConfigRotateSpeed();
-        SideRotate(currRotateAngle_);
-        item_Color_.SetCurrentColor(spriterender_.color);
-
-    }
     void Start()
     {
-        //item_Health_.AddToAction_OnDeath(() => Spawning_Main.instance_.spawning_SFX_.Spawn_ExplosionDeath_Item(transform.position, spriterender_.color));
         item_Config_.Config_Init();
-        GameObject activeItemsGameObject = GameObject.FindGameObjectWithTag(CONSTANTS.ActiveItems_Tag);
-        item_Config_.ActiveItems_ = activeItemsGameObject.GetComponent<ActiveItems>();
 
-        item_Health_.AddToAction_OnDeath(() => FakeKill());
-        item_Collision_.Congfigure_CollisionTables();
-        RepeatStart();
 
     }
 
     void Update()
     {
-        Rotate(currRotationSpeed_);
+        item_Controller_.Rotate();
+    }
+
+    public override void SetComponents()
+    {
+        item_Controller_ = GetComponent<Item_Controller>();
+        item_Collision_ = GetComponent<Collision>();
+        item_Sound_ = GetComponent<Item_Sound>();
+        item_Move_ = GetComponent<MovePlus>();
+        item_Health_ = GetComponent<Health>();
+        item_Config_ = GetComponent<Item_Config>();
+        item_Direction_ = GetComponent<Direction>();
+        item_Color_ = GetComponent<Color_General>();
     }
 }
